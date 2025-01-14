@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Independent Scrolling Sidebar</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- เพิ่ม Font Awesome สำหรับไอคอน -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+</head>
+<body>
+    
+    <!-- Sidebar -->
+    <div class="sidebar p-3">
+        <a href="/" class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
+            <svg class="bi pe-none me-2" width="30" height="24">
+                <use xlink:href="#bootstrap">
+                </use>
+            </svg>
+            <span class="fs-5 fw-semibold">Collapsible</span>
+        </a>
+        <ul class="list-unstyled ps-0">
+          <li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="true">
+              Home
+            </button>
+            <div class="collapse show" id="home-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Updates
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Reports
+                    </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+              Dashboard
+            </button>
+            <div class="collapse" id="dashboard-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Overview
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Weekly
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Monthly
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Annually
+                    </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+              Orders
+            </button>
+            <div class="collapse" id="orders-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Processed
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Shipped
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Returned
+                    </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="border-top my-3"></li>
+          <li class="mb-1">
+            <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
+              Account
+            </button>
+            <div class="collapse" id="account-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">New...</a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Profile</a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Sign out
+                    </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <h1>Content Section</h1>
+        <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisi vel consectetur euismod, nisi lorem tincidunt lorem, vitae tincidunt lorem eros eu purus.
+        </p>
+        <p>
+            Curabitur nec facilisis ipsum. Suspendisse potenti. Integer bibendum turpis in quam feugiat, a venenatis felis luctus.
+        </p>
+        <p>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Praesentium molestiae dignissimos, odio cum reiciendis provident laudantium, dolores obcaecati necessitatibus perferendis quasi voluptatem doloribus sed, dolore natus totam? Atque, ut fuga.
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quod error corrupti deserunt quia nostrum aliquid velit eveniet labore ipsam, natus animi harum vel veritatis qui laudantium reiciendis debitis dicta aperiam?
+        </p>
+    </div>
+    
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+    <script>
+        // ฟังก์ชันเพื่อดึงข้อมูลเนื้อหาจากฐานข้อมูล
+        function fetchContent() {
+            fetch('get-content.php')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('contentTitle').innerText = data.title;
+                    document.getElementById('contentBody').innerHTML = data.body;
+                });
+        }
+
+        // ฟังก์ชันเพื่อเปิดการแก้ไขเนื้อหา
+        function editContent() {
+            let title = prompt("Enter new title:");
+            let body = prompt("Enter new body content:");
+            if (title && body) {
+                updateContent(title, body);
+            }
+        }
+
+        // ฟังก์ชันเพื่ออัพเดตเนื้อหาในฐานข้อมูล
+        function updateContent(title, body) {
+            fetch('update_content.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ title, body })
+            }).then(() => fetchContent());
+        }
+
+        // โหลดข้อมูลเนื้อหาทันทีเมื่อโหลดหน้า
+        window.onload = fetchContent;
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+    #editor-container {
+      height: 300px;
+      border: 1px solid #ccc;
+    }
+    #save-btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #save-btn:hover {
+      background-color: #0056b3;
+    }
+    #toolbar {
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  padding: 5px;
+}
+
+#editor-container {
+  height: 400px;
+  border: 1px solid #ccc;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+button {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Index */
+
+/* โครงสร้าง Flexbox แบ่ง Sidebar และ Content */
+body {
+  display: flex;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;  /* Adjust based on your sidebar width */
+  height: 100vh;
+  text-align: left;
+  overflow-y: auto;
+  cursor: pointer;
+}
+
+/* Content */
+.content {
+  margin-left: 300px; /* ระยะห่างจากด้านซ้ายเท่ากับความกว้าง Sidebar */
+  height: 100vh; /* เต็มความสูงของหน้าจอ */
+  overflow-y: auto; /* เลื่อนเฉพาะแนวตั้งได้ */
+  overflow-x: hidden; /* ปิดการเลื่อนแนวนอน */
+  padding: 20px; /* ระยะห่างภายใน */
+  cursor: pointer;
+}
+

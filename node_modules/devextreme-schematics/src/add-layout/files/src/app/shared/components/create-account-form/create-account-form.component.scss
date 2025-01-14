@@ -1,0 +1,18 @@
+.create-account-form {
+  .policy-info {
+    margin: 10px 0;
+    color: var(--base-text-color-alpha-7);
+    font-size: 14px;
+    font-style: normal;
+
+    a {
+      color: var(--base-text-color-alpha-7);
+    }
+  }
+
+  .login-link {
+    color: var(--base-accent);
+    font-size: 16px;
+    text-align: center;
+  }
+}

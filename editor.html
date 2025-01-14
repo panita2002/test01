@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlayer Integration</title>
+</head>
+
+<body>
+    <!-- Container for the Unlayer editor -->
+    <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
+
+    <!-- Unlayer script -->
+    <script src="https://editor.unlayer.com/embed.js"></script>
+    
+    <script>
+        // Initialize Unlayer editor
+        unlayer.init({
+            id: 'editor-container',
+            projectId: 0, // You can set a project ID if needed
+            displayMode: 'email'
+        });
+    </script>
+
+    <button onclick="saveDesign()">Save Design</button>
+    <script>
+        function saveDesign() {
+            unlayer.exportHtml(function (data) {
+                const designJson = data.design; // ข้อมูล Design JSON
+                const designHtml = data.html;  // ข้อมูล HTML
+                
+
+                // ส่งข้อมูลไปยัง PHP script
+                fetch('save-content.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: designHtml // แปลง JSON Object เป็น String
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        // console.log (designHtml)
+                        alert('Design saved successfully!');
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while saving the design.');
+                });
+            });
+        }
+
+    </script>
+
+</body>
+</html>
