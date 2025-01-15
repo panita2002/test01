@@ -1,63 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unlayer Integration</title>
+    <title>Editor</title>
 </head>
-
 <body>
-    <!-- Container for the Unlayer editor -->
+    <h1>แก้ไขเนื้อหา</h1>
+
+    <!-- Container สำหรับแสดง Editor -->
     <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
 
-    <!-- Unlayer script -->
+    <p id="status"></p>
+
     <script src="https://editor.unlayer.com/embed.js"></script>
-    
     <script>
-        // Initialize Unlayer editor
-        unlayer.init({
-            id: 'editor-container',
-            projectId: 0, // You can set a project ID if needed
-            displayMode: 'email'
-        });
-    </script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editableContent = localStorage.getItem('editableContent');
 
-    <button onclick="saveDesign()">Save Design</button>
-    <script>
-        function saveDesign() {
-            unlayer.exportHtml(function (data) {
-                const designJson = data.design; // ข้อมูล Design JSON
-                const designHtml = data.html;  // ข้อมูล HTML
-                
-
-                // ส่งข้อมูลไปยัง PHP script
-                fetch('save-content.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        content: designHtml // แปลง JSON Object เป็น String
-                    })
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        // console.log (designHtml)
-                        alert('Design saved successfully!');
-                    } else {
-                        alert('Error: ' + result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while saving the design.');
+            if (editableContent) {
+                unlayer.init({
+                    id: 'editor-container',
+                    projectId: 0, // ใส่ projectId ที่ต้องการ ถ้ามี
+                    displayMode: 'email'
                 });
+
+                unlayer.loadDesign({
+                    html: editableContent
+                });
+
+                // ส่งข้อมูลไปยังเซิร์ฟเวอร์เมื่อมีการเปลี่ยนแปลงใน editor
+                unlayer.addEventListener('contentChanged', function() {
+                    unlayer.exportHtml(function (data) {
+                        const designHtml = data.html;
+
+                        if (designHtml.trim()) {
+                            // ส่งข้อมูลไปยังเซิร์ฟเวอร์แบบเรียลไทม์
+                            saveContentRealtime(designHtml);
+                        }
+                    });
+                });
+            } else {
+                alert('ไม่พบข้อมูลที่ต้องการแก้ไข');
+            }
+        });
+
+        // ฟังก์ชันบันทึกข้อมูลไปยังฐานข้อมูลแบบเรียลไทม์
+        function saveContentRealtime(content) {
+            const status = document.getElementById('status');
+            status.textContent = 'กำลังบันทึก...';
+            status.style.color = 'blue';
+
+            fetch('save-content.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content: content
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    status.textContent = 'บันทึกสำเร็จ!';
+                    status.style.color = 'green';
+                } else {
+                    status.textContent = 'เกิดข้อผิดพลาด: ' + result.message;
+                    status.style.color = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                status.textContent = 'เกิดข้อผิดพลาดในการเชื่อมต่อ';
+                status.style.color = 'red';
             });
         }
-
     </script>
-
 </body>
 </html>
