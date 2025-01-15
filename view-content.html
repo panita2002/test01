@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Content</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #content {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>รายละเอียดเนื้อหา</h1>
+    <div id="content">กำลังโหลดเนื้อหา...</div>
+    <button id="edit-btn">แก้ไข</button>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+
+        if (!id) {
+            document.getElementById('content').innerHTML = '<p style="color: red;">ไม่พบข้อมูล</p>';
+            document.getElementById('edit-btn').style.display = 'none';
+        } else {
+            fetch(`get-content.php?id=${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('content').innerHTML = data.content;
+                    } else {
+                        document.getElementById('content').innerHTML = '<p style="color: red;">ไม่พบข้อมูล</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('content').innerHTML = '<p style="color: red;">ไม่สามารถโหลดข้อมูลได้</p>';
+                });
+
+            document.getElementById('edit-btn').addEventListener('click', () => {
+                window.location.href = `editor.html?id=${id}`;
+            });
+        }
+    </script>
+</body>
+</html>

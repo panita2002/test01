@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 2px;
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>รายการเนื้อหา</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ลำดับ</th>
+                <th>ชื่อเนื้อหา</th>
+                <th>วันที่สร้าง</th>
+                <th>การจัดการ</th>
+            </tr>
+        </thead>
+        <tbody id="content-list">
+            <tr>
+                <td colspan="4">กำลังโหลดข้อมูล...</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        fetch('get-content-list.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tbody = document.getElementById('content-list');
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4">ไม่มีข้อมูล</td></tr>';
+                    return;
+                }
+
+                data.forEach((item, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${item.title}</td>
+                        <td>${item.created_at}</td>
+                        <td>
+                            <button onclick="viewContent(${item.id})">ดูรายละเอียด</button>
+                            <button onclick="editContent(${item.id})">แก้ไข</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const tbody = document.getElementById('content-list');
+                tbody.innerHTML = '<tr><td colspan="4" style="color: red;">ไม่สามารถโหลดข้อมูลได้</td></tr>';
+            });
+
+        function viewContent(id) {
+            window.location.href = `view-content.html?id=${id}`;
+        }
+
+        function editContent(id) {
+            window.location.href = `editor.html?id=${id}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,56 +1,62 @@
 <?php
-// เปิด Error Reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+header('Content-Type: application/json; charset=utf-8');
 
-// CORS Headers
-header("Access-Control-Allow-Origin: *");
-header("Content-Type: application/json; charset=UTF-8");
-
-// เชื่อมต่อฐานข้อมูล
+// ข้อมูลการเชื่อมต่อกับฐานข้อมูล
 $servername = "localhost";
 $username = "root";
-$password = ""; // เปลี่ยนรหัสผ่านให้ตรงกับ MySQL
-$database = "test01"; // ชื่อฐานข้อมูล
+$password = "";
+$database = "test01";
 
+// เชื่อมต่อฐานข้อมูล
 $conn = new mysqli($servername, $username, $password, $database);
 
-// ตรวจสอบการเชื่อมต่อ
 if ($conn->connect_error) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $conn->connect_error]);
     exit;
 }
 
-// รับข้อมูลจาก request
+// รับข้อมูล JSON จากคำขอ
 $data = json_decode(file_get_contents('php://input'), true);
-if (!$data) {
+
+// รับข้อมูลจาก request
+$name = isset($data['name']) ? $data['name'] : '';
+$title = isset($data['title']) ? $data['title'] : '';
+$content = isset($data['content']) ? $data['content'] : '';
+$design = isset($data['design']) ? $data['design'] : '';
+
+// ตรวจสอบข้อมูลที่จำเป็น
+if (empty($name) || empty($title) || empty($content) || empty($design)) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid JSON input']);
+    echo json_encode(['success' => false, 'message' => 'Invalid input.']);
     exit;
 }
 
-$content = trim($data['content'] ?? '');
+// สร้างคำสั่ง SQL สำหรับการบันทึกข้อมูลใหม่
+$sql = "INSERT INTO editor_content (name, title, content, design, created_at, created_time) VALUES (?, ?, ?, ?, CURDATE(), CURTIME())";
 
-if (empty($content)) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Content is empty']);
+// เตรียมคำสั่ง SQL
+$stmt = $conn->prepare($sql);
+
+// ตรวจสอบการเตรียมคำสั่ง SQL
+if ($stmt === false) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'SQL preparation failed: ' . $conn->error]);
     exit;
 }
 
-// บันทึกข้อมูลลงฐานข้อมูล
-$stmt = $conn->prepare("INSERT INTO editor_content (content, created_at) VALUES (?, NOW())");
-$stmt->bind_param("s", $content);
+// ทำการผูกค่าตัวแปรกับคำสั่ง SQL
+$stmt->bind_param("ssss", $name, $title, $content, $design);
 
+// ตรวจสอบว่าการบันทึกทำได้สำเร็จหรือไม่
 if ($stmt->execute()) {
-    http_response_code(200);
-    echo json_encode(['success' => true, 'message' => 'Content saved successfully']);
+    echo json_encode(['success' => true, 'message' => 'Content saved successfully.']);
 } else {
     http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'Failed to save content: ' . $stmt->error]);
+    echo json_encode(['success' => false, 'message' => 'Failed to save content.']);
 }
 
-// ปิดการเชื่อมต่อ
+// ปิดคำสั่ง SQL และการเชื่อมต่อ
 $stmt->close();
 $conn->close();
 ?>

@@ -13,15 +13,14 @@
         <p id="loading">กำลังโหลดข้อมูล...</p>
     </div>
 
-    <button id="edit-button" style="display: none;" onclick="editContent()">แก้ไข</button>
-    <button id="save-button" style="display: none;" onclick="saveContent()">บันทึก</button>
+    <!-- ปุ่มสำหรับแก้ไข -->
+    <button onclick="editContent()">แก้ไข</button>
 
     <script>
-        const id = 45; // เปลี่ยน ID ตรงนี้ตามข้อมูลที่ต้องการ
-        let originalContent = '';
+        const id = 1; // ใช้ ID ที่ต้องการดึงข้อมูลจากฐานข้อมูล
 
         // ดึงข้อมูลจาก PHP และแสดงใน div
-        fetch(`http://localhost/TEST01/get-content.php?id=${id}`)
+        fetch(`get-content.php?id=${id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -29,52 +28,19 @@
                 return response.text();
             })
             .then(data => {
-                originalContent = data;
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('display-content').innerHTML = data;  // แสดงผลลัพธ์จาก HTML
-                document.getElementById('edit-button').style.display = 'inline-block';
+                document.getElementById('display-content').innerHTML = data;
             })
             .catch(error => {
                 console.error('Error:', error);
                 document.getElementById('display-content').innerHTML = '<p style="color: red;">ไม่สามารถโหลดข้อมูลได้</p>';
             });
 
+        // ฟังก์ชันที่ใช้ในการเปลี่ยนหน้าไปที่ editor.html พร้อมส่งข้อมูล
         function editContent() {
-            // แปลงข้อมูลที่แสดงให้เป็นรูปแบบที่สามารถแก้ไขได้ (ใช้ contentEditable)
-            document.getElementById('display-content').innerHTML = `<div contenteditable="true" id="editable-content" style="border: 1px solid #ccc; padding: 10px;">${originalContent}</div>`;
-            document.getElementById('edit-button').style.display = 'none';
-            document.getElementById('save-button').style.display = 'inline-block';
-        }
-
-        function saveContent() {
-            const updatedContent = document.getElementById('editable-content').innerHTML;  // ดึง HTML ที่แก้ไข
-
-            // ส่งข้อมูลที่แก้ไขไปยัง PHP
-            fetch('save-content.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    id: id,
-                    content: updatedContent
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    originalContent = updatedContent;
-                    document.getElementById('display-content').innerHTML = updatedContent;  // แสดงข้อมูลที่ถูกบันทึกแล้ว
-                    document.getElementById('edit-button').style.display = 'inline-block';
-                    document.getElementById('save-button').style.display = 'none';
-                } else {
-                    alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('เกิดข้อผิดพลาดในการเชื่อมต่อ');
-            });
+            const content = document.getElementById('display-content').innerHTML;
+            localStorage.setItem('editableContent', content); // เก็บข้อมูลไว้ใน localStorage
+            window.location.href = 'editor.html'; // ไปที่หน้า editor
         }
     </script>
 </body>
