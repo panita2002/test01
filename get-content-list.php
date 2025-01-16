@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
+
 // เชื่อมต่อฐานข้อมูล
 $servername = "localhost";
 $username = "root";

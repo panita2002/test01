@@ -20,35 +20,34 @@ if ($conn->connect_error) {
 $data = json_decode(file_get_contents('php://input'), true);
 
 // รับข้อมูลจาก request
+$id = isset($data['id']) ? intval($data['id']) : null;
 $name = isset($data['name']) ? $data['name'] : '';
 $title = isset($data['title']) ? $data['title'] : '';
 $content = isset($data['content']) ? $data['content'] : '';
 $design = isset($data['design']) ? $data['design'] : '';
+$project_id = isset($data['project_id']) ? intval($data['project_id']) : 0;
+$category_id = isset($data['category_id']) ? intval($data['category_id']) : 0;
 
 // ตรวจสอบข้อมูลที่จำเป็น
-if (empty($name) || empty($title) || empty($content) || empty($design)) {
+if (empty($name) || empty($title) || empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid input.']);
     exit;
 }
 
-// สร้างคำสั่ง SQL สำหรับการบันทึกข้อมูลใหม่
-$sql = "INSERT INTO editor_content (name, title, content, design, created_at, created_time) VALUES (?, ?, ?, ?, CURDATE(), CURTIME())";
-
-// เตรียมคำสั่ง SQL
-$stmt = $conn->prepare($sql);
-
-// ตรวจสอบการเตรียมคำสั่ง SQL
-if ($stmt === false) {
-    http_response_code(500);
-    echo json_encode(['success' => false, 'message' => 'SQL preparation failed: ' . $conn->error]);
-    exit;
+if ($id) {
+    // อัพเดตข้อมูล
+    $sql = "UPDATE editor_content SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssiii", $name, $title, $content, $design, $project_id, $category_id, $id);
+} else {
+    // สร้างข้อมูลใหม่
+    $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, created_at, created_time) 
+            VALUES (?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssssii", $name, $title, $content, $design, $project_id, $category_id);
 }
 
-// ทำการผูกค่าตัวแปรกับคำสั่ง SQL
-$stmt->bind_param("ssss", $name, $title, $content, $design);
-
-// ตรวจสอบว่าการบันทึกทำได้สำเร็จหรือไม่
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Content saved successfully.']);
 } else {
@@ -56,7 +55,6 @@ if ($stmt->execute()) {
     echo json_encode(['success' => false, 'message' => 'Failed to save content.']);
 }
 
-// ปิดคำสั่ง SQL และการเชื่อมต่อ
 $stmt->close();
 $conn->close();
 ?>

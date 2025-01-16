@@ -1,0 +1,39 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+#content-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    display: flex;
+    gap: 20px; /* เว้นระยะห่างระหว่างฟอร์ม */
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    width: 150px;
+    display: inline-block;
+    text-align: right;
+}
+
+.form-group input {
+    flex: 1;
+}
+
+/* จัดให้ name และ title อยู่ข้างกัน */
+.name-title-group {
+    display: flex;
+    gap: 20px;
+}
+
+/* จัดให้ project_id และ category_id อยู่ข้างกัน */
+.project-category-group {
+    display: flex;
+    gap: 20px;
+}

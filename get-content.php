@@ -17,36 +17,37 @@ if ($conn->connect_error) {
     exit;
 }
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
-if ($id <= 0) {
-    http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'Invalid ID']);
-    exit;
-}
+if ($id) {
+    // ดึงข้อมูลจากฐานข้อมูลตาม ID
+    $sql = "SELECT * FROM editor_content WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-// ดึงข้อมูลจากฐานข้อมูลตาม ID
-$sql = "SELECT * FROM editor_content WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        echo json_encode([
+            'success' => true,
+            'id' => $row['id'],
+            'name' => $row['name'],
+            'title' => $row['title'],
+            'project_id' => $row['project_id'],
+            'category_id' => $row['category_id'],
+            'content' => $row['content'],
+            'design' => json_decode($row['design'])
+        ]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Content not found']);
+    }
 
-// ตรวจสอบว่าพบข้อมูลหรือไม่
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    echo json_encode([
-        'success' => true,
-        'id' => $row['id'],
-        'name' => $row['name'],
-        'title' => $row['title'],
-        'content' => $row['content'], // เนื้อหา HTML ที่จะโหลดลงใน Unlayer
-        'design' => json_decode($row['design']) // การแปลงค่า JSON ของ design ที่เก็บไว้
-    ]);
+    $stmt->close();
 } else {
-    echo json_encode(['success' => false, 'message' => 'Content not found']);
+    // กรณีไม่มี ID ให้ส่งค่าที่เกี่ยวกับการสร้างใหม่
+    echo json_encode(['success' => true, 'message' => 'Create new content']);
 }
 
-$stmt->close();
 $conn->close();
 ?>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor</title>
+    <link rel="stylesheet" href="css/editor.css">
+
     <script src="https://editor.unlayer.com/embed.js"></script>
 </head>
 <body>
@@ -11,13 +13,23 @@
 
     <!-- ฟอร์มกรอกข้อมูล Name และ Title -->
     <form id="content-form">
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-        <br><br>
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
-        <br><br>
+        <div class="name-title-group form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <div class="project-category-group form-group">
+            <label for="project_id">Project ID:</label>
+            <input type="number" id="project_id" name="project_id" required>
+
+            <label for="category_id">Category ID:</label>
+            <input type="number" id="category_id" name="category_id" required>
+        </div>
     </form>
+
 
     <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
     <button id="save-button">บันทึก</button>
@@ -26,24 +38,24 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id'); // ดึง id จาก URL เช่น editor.html?id=37
-
-        if (!id) {
-            document.getElementById('status').textContent = 'ไม่มี ID ระบุใน URL';
-            document.getElementById('status').style.color = 'red';
-            throw new Error('ID is required');
-        }
-
+    
         const editorContainer = document.getElementById('editor-container');
         const statusElement = document.getElementById('status');
-
+    
+        // หากไม่มี id ให้ทำการแสดงข้อความว่ากำลังสร้างเนื้อหาหรือใหม่
+        if (!id) {
+            document.getElementById('status').textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
+            document.getElementById('status').style.color = 'blue';
+        }
+    
         unlayer.init({
             id: 'editor-container',
             projectId: 0,
             displayMode: 'email'
         });
-
-        // ดึงข้อมูลจากฐานข้อมูลและโหลดใน Unlayer Editor
-        function loadContentById(id) {
+    
+        // ถ้ามี id ใน URL ให้ดึงข้อมูลจากฐานข้อมูล
+        if (id) {
             fetch(`get-content.php?id=${id}`)
                 .then((response) => {
                     if (!response.ok) {
@@ -52,14 +64,16 @@
                     return response.json();
                 })
                 .then((data) => {
+                    console.log("Data from server:", data); // ตรวจสอบข้อมูลที่ได้รับ
                     if (data.success) {
                         unlayer.loadDesign({
-                            html: data.content, // โหลด HTML ใน Editor
-                            design: data.design // ถ้ามีข้อมูล design ให้โหลดไปด้วย
+                            html: data.content,
+                            design: data.design
                         });
-                        // เติมข้อมูล name และ title จากฐานข้อมูล
                         document.getElementById('name').value = data.name;
                         document.getElementById('title').value = data.title;
+                        document.getElementById('project_id').value = data.project_id;
+                        document.getElementById('category_id').value = data.category_id;
                     } else {
                         statusElement.textContent = `ไม่พบเนื้อหาสำหรับ ID ${id}`;
                         statusElement.style.color = 'red';
@@ -71,37 +85,37 @@
                     statusElement.style.color = 'red';
                 });
         }
-
+    
         // บันทึกเนื้อหาที่แก้ไขกลับไปยังฐานข้อมูล
         function saveContent() {
             statusElement.textContent = 'กำลังบันทึก...';
             statusElement.style.color = 'blue';
-
-            // ดึงข้อมูลจากฟอร์ม
+    
             const name = document.getElementById('name').value;
             const title = document.getElementById('title').value;
-
-            if (!name || !title) {
-                statusElement.textContent = 'กรุณากรอก Name และ Title';
+            const projectId = parseInt(document.getElementById('project_id').value, 10);
+            const categoryId = parseInt(document.getElementById('category_id').value, 10);
+    
+            if (!name || !title || isNaN(projectId) || isNaN(categoryId)) {
+                statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วน';
                 statusElement.style.color = 'red';
                 return;
             }
-
+    
             unlayer.exportHtml((data) => {
                 const htmlContent = data.html;
                 unlayer.saveDesign((design) => {
-                    // ตรวจสอบว่า design ได้รับค่ามาก่อนการส่ง
-                    console.log("Design JSON: ", design);
-
                     fetch('save-content.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            id: id,
-                            name: name, // ส่งข้อมูล name
-                            title: title, // ส่งข้อมูล title
+                            id: id || null, // ถ้ามี ID จะส่งค่า ID, ถ้าไม่มีจะเป็น null เพื่อสร้างใหม่
+                            name: name,
+                            title: title,
                             content: htmlContent,
-                            design: JSON.stringify(design) // ส่งข้อมูล design JSON
+                            design: JSON.stringify(design),
+                            project_id: projectId,
+                            category_id: categoryId
                         })
                     })
                     .then(response => response.json())
@@ -122,13 +136,9 @@
                 });
             });
         }
-
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadContentById(id);
-        });
-
+    
         document.getElementById('save-button').addEventListener('click', saveContent);
     </script>
+    
 </body>
 </html>
