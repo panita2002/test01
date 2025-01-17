@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor</title>
-    <link rel="stylesheet" href="css/editor.css">
+    <link rel="stylesheet" href="../css/editor.css">
     <script src="https://editor.unlayer.com/embed.js"></script>
 </head>
 <body>
@@ -53,7 +53,7 @@
 
         // โหลดข้อมูลจาก API เมื่อมี id
         if (id) {
-            fetch(`get-content.php?id=${id}`)
+            fetch(`../php/get-content.php?id=${id}`)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
@@ -114,7 +114,7 @@
             unlayer.exportHtml((data) => {
                 const htmlContent = data.html;
                 unlayer.saveDesign((design) => {
-                    fetch('save-content.php', {
+                    fetch('../php/save-content.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -125,7 +125,7 @@
                             design: JSON.stringify(design),
                             project_id: projectId,
                             category_id: categoryId,
-                            updated_at: updatedAt, // เพิ่มวันที่และเวลาล่าสุด
+                            updated_at: updatedAt // เพิ่มวันที่และเวลาล่าสุด
                         })
                     })
                     .then(response => response.json())
@@ -133,6 +133,12 @@
                         if (result.success) {
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
+
+                            // หลังจากบันทึกสำเร็จ ให้ไปยังหน้า view-content.html
+                            // document.getElementById('save-button').addEventListener('click', () => {
+                            window.location.href = `./view-content.html?id=${id}`;
+                        // });
+
                         } else {
                             statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
                             statusElement.style.color = 'red';

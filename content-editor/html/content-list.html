@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content List</title>
-    <link rel="stylesheet" href="css/content.css">
+    <link rel="stylesheet" href="../css/content.css">
 </head>
 <body>
     <h1>รายการเนื้อหา</h1>
@@ -27,7 +27,7 @@
     <script>
         // ฟังก์ชันดึงข้อมูลรายการเนื้อหา
         function loadContentList() {
-            fetch('get-content-list.php')
+            fetch('../php/get-content-list.php')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -67,18 +67,18 @@
 
         // ฟังก์ชันเปิดหน้าดูรายละเอียด
         function viewContent(id) {
-            window.location.href = `view-content.html?id=${id}`;
+            window.location.href = `./view-content.html?id=${id}`;
         }
 
         // ฟังก์ชันเปิดหน้าแก้ไข
         function editContent(id) {
-            window.location.href = `editor.html?id=${id}`;
+            window.location.href = `./editor.html?id=${id}`;
         }
 
         // ฟังก์ชันลบเนื้อหา
         function deleteContent(id) {
             if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบเนื้อหานี้?')) {
-                fetch(`delete-content.php?id=${id}`, { method: 'DELETE' })
+                fetch(`../php/delete-content.php?id=${id}`, { method: 'DELETE' })
                     .then(response => response.json())
                     .then(result => {
                         if (result.success) {

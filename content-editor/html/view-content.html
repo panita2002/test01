@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Content</title>
-    <link rel="stylesheet" href="css/view.css">
+    <link rel="stylesheet" href="../css/view.css">
 </head>
 <body>
     <h1>รายละเอียดเนื้อหา</h1>
@@ -19,7 +19,7 @@
             document.getElementById('content').innerHTML = '<p style="color: red;">ไม่พบข้อมูล</p>';
             document.getElementById('edit-btn').style.display = 'none';
         } else {
-            fetch(`get-content.php?id=${id}`)
+            fetch(`../php/get-content.php?id=${id}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -39,7 +39,7 @@
                 });
 
             document.getElementById('edit-btn').addEventListener('click', () => {
-                window.location.href = `editor.html?id=${id}`;
+                window.location.href = `./editor.html?id=${id}`;
             });
         }
     </script>
