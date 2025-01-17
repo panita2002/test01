@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editor</title>
     <link rel="stylesheet" href="css/editor.css">
-
     <script src="https://editor.unlayer.com/embed.js"></script>
 </head>
 <body>
     <h1>แก้ไขเนื้อหา</h1>
 
-    <!-- ฟอร์มกรอกข้อมูล Name และ Title -->
     <form id="content-form">
         <div class="name-title-group form-group">
             <label for="name">Name:</label>
@@ -30,7 +28,6 @@
         </div>
     </form>
 
-
     <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
     <button id="save-button">บันทึก</button>
     <p id="status"></p>
@@ -38,70 +35,82 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id'); // ดึง id จาก URL เช่น editor.html?id=37
-    
         const editorContainer = document.getElementById('editor-container');
         const statusElement = document.getElementById('status');
-    
-        // หากไม่มี id ให้ทำการแสดงข้อความว่ากำลังสร้างเนื้อหาหรือใหม่
+
+        // หากไม่มี id ให้แสดงข้อความว่ากำลังสร้างเนื้อหาใหม่
         if (!id) {
-            document.getElementById('status').textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
-            document.getElementById('status').style.color = 'blue';
+            statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
+            statusElement.style.color = 'blue';
         }
-    
+
+        // Initialize Unlayer
         unlayer.init({
             id: 'editor-container',
             projectId: 0,
             displayMode: 'email'
         });
-    
-        // ถ้ามี id ใน URL ให้ดึงข้อมูลจากฐานข้อมูล
+
+        // โหลดข้อมูลจาก API เมื่อมี id
         if (id) {
             fetch(`get-content.php?id=${id}`)
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
                 })
-                .then((data) => {
-                    console.log("Data from server:", data); // ตรวจสอบข้อมูลที่ได้รับ
+                .then(data => {
                     if (data.success) {
-                        unlayer.loadDesign({
-                            html: data.content,
-                            design: data.design
-                        });
-                        document.getElementById('name').value = data.name;
-                        document.getElementById('title').value = data.title;
-                        document.getElementById('project_id').value = data.project_id;
-                        document.getElementById('category_id').value = data.category_id;
+                        try {
+                            if (data.design) {
+                                unlayer.loadDesign(data.design); // โหลด design object
+                            } else if (data.content) {
+                                unlayer.setHTML(data.content); // โหลด HTML string
+                            } else {
+                                throw new Error("ไม่มีข้อมูลที่สามารถโหลดได้");
+                            }
+
+                            // อัปเดตค่าฟิลด์
+                            document.getElementById("name").value = data.name || "";
+                            document.getElementById("title").value = data.title || "";
+                            document.getElementById("project_id").value = data.project_id || "";
+                            document.getElementById("category_id").value = data.category_id || "";
+
+                        } catch (error) {
+                            console.error("Error loading design into Unlayer:", error);
+                            statusElement.textContent = "เกิดข้อผิดพลาดในการโหลดเนื้อหาเข้าสู่ editor";
+                            statusElement.style.color = "red";
+                        }
                     } else {
                         statusElement.textContent = `ไม่พบเนื้อหาสำหรับ ID ${id}`;
-                        statusElement.style.color = 'red';
+                        statusElement.style.color = "red";
                     }
                 })
-                .catch((error) => {
-                    console.error('Error loading content:', error);
-                    statusElement.textContent = 'เกิดข้อผิดพลาดในการโหลดเนื้อหา';
-                    statusElement.style.color = 'red';
+                .catch(error => {
+                    console.error("Error loading content:", error);
+                    statusElement.textContent = "เกิดข้อผิดพลาดในการโหลดเนื้อหา";
+                    statusElement.style.color = "red";
                 });
         }
-    
-        // บันทึกเนื้อหาที่แก้ไขกลับไปยังฐานข้อมูล
+
+        // บันทึกเนื้อหา
         function saveContent() {
             statusElement.textContent = 'กำลังบันทึก...';
             statusElement.style.color = 'blue';
-    
+
             const name = document.getElementById('name').value;
             const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
-    
+
             if (!name || !title || isNaN(projectId) || isNaN(categoryId)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วน';
                 statusElement.style.color = 'red';
                 return;
             }
-    
+
+            // สร้างวันที่และเวลาปัจจุบัน
+            const updatedAt = new Date().toISOString(); // รูปแบบ ISO 8601 (YYYY-MM-DDTHH:mm:ss.sssZ)
+
             unlayer.exportHtml((data) => {
                 const htmlContent = data.html;
                 unlayer.saveDesign((design) => {
@@ -115,7 +124,8 @@
                             content: htmlContent,
                             design: JSON.stringify(design),
                             project_id: projectId,
-                            category_id: categoryId
+                            category_id: categoryId,
+                            updated_at: updatedAt, // เพิ่มวันที่และเวลาล่าสุด
                         })
                     })
                     .then(response => response.json())
@@ -136,9 +146,9 @@
                 });
             });
         }
-    
+
+
         document.getElementById('save-button').addEventListener('click', saveContent);
     </script>
-    
 </body>
 </html>

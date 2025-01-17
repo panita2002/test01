@@ -36,8 +36,10 @@ if (empty($name) || empty($title) || empty($content) || empty($design) || $proje
 }
 
 if ($id) {
-    // อัพเดตข้อมูล
-    $sql = "UPDATE editor_content SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ? WHERE id = ?";
+    // อัปเดตข้อมูล และอัปเดตวันที่กับเวลาที่สร้าง
+    $sql = "UPDATE editor_content 
+            SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ?, updated_at = CURDATE(), update_time = CURTIME() 
+            WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssssiii", $name, $title, $content, $design, $project_id, $category_id, $id);
 } else {

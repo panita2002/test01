@@ -4,37 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content List</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        button {
-            padding: 5px 10px;
-            margin: 2px;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        h1 {
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/content.css">
 </head>
 <body>
     <h1>รายการเนื้อหา</h1>
@@ -55,49 +25,78 @@
     </table>
 
     <script>
-        fetch('get-content-list.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                const tbody = document.getElementById('content-list');
-                tbody.innerHTML = '';
+        // ฟังก์ชันดึงข้อมูลรายการเนื้อหา
+        function loadContentList() {
+            fetch('get-content-list.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tbody = document.getElementById('content-list');
+                    tbody.innerHTML = '';
 
-                if (data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="4">ไม่มีข้อมูล</td></tr>';
-                    return;
-                }
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4">ไม่มีข้อมูล</td></tr>';
+                        return;
+                    }
 
-                data.forEach((item, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${item.title}</td>
-                        <td>${item.created_at}</td>
-                        <td>
-                            <button onclick="viewContent(${item.id})">ดูรายละเอียด</button>
-                            <button onclick="editContent(${item.id})">แก้ไข</button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
+                    data.forEach((item, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${item.title}</td>
+                            <td>${item.created_at}</td>
+                            <td>
+                                <button onclick="viewContent(${item.id})">ดูรายละเอียด</button>
+                                <button onclick="editContent(${item.id})">แก้ไข</button>
+                                <button onclick="deleteContent(${item.id})" style="color: red;">ลบ</button>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const tbody = document.getElementById('content-list');
+                    tbody.innerHTML = '<tr><td colspan="4" style="color: red;">ไม่สามารถโหลดข้อมูลได้</td></tr>';
                 });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                const tbody = document.getElementById('content-list');
-                tbody.innerHTML = '<tr><td colspan="4" style="color: red;">ไม่สามารถโหลดข้อมูลได้</td></tr>';
-            });
+        }
 
+        // ฟังก์ชันเปิดหน้าดูรายละเอียด
         function viewContent(id) {
             window.location.href = `view-content.html?id=${id}`;
         }
 
+        // ฟังก์ชันเปิดหน้าแก้ไข
         function editContent(id) {
             window.location.href = `editor.html?id=${id}`;
         }
+
+        // ฟังก์ชันลบเนื้อหา
+        function deleteContent(id) {
+            if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบเนื้อหานี้?')) {
+                fetch(`delete-content.php?id=${id}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.success) {
+                            alert('ลบเนื้อหาสำเร็จ');
+                            loadContentList(); // โหลดรายการใหม่หลังลบสำเร็จ
+                        } else {
+                            alert(`เกิดข้อผิดพลาด: ${result.message}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('เกิดข้อผิดพลาดในการลบเนื้อหา');
+                    });
+            }
+        }
+
+        // โหลดรายการเนื้อหาเมื่อเปิดหน้า
+        loadContentList();
     </script>
 </body>
 </html>
