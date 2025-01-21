@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Data</title>
+    <link rel="stylesheet" href="../css/view.css">
+</head>
+<body>
+    <h1>Insert Data</h1>
+
+    <!-- ฟอร์มสำหรับเพิ่มข้อมูลในตาราง headings -->
+    <form action="../php/insert.php" method="POST">
+        <h3>Add Heading</h3>
+        <label for="heading_title">Title:</label>
+        <input type="text" id="heading_title" name="heading_title" required><br><br>
+
+        <label for="parent_id">Parent ID (optional):</label>
+        <input type="number" id="parent_id" name="parent_id"><br><br>
+
+        <label for="order">Order:</label>
+        <input type="number" id="order" name="order" required><br><br>
+
+        <button type="submit" name="insert_heading">Add Heading</button>
+    </form>
+
+    <hr>
+
+    <!-- ฟอร์มสำหรับเพิ่มข้อมูลในตาราง tables -->
+    <form action="../php/insert.php" method="POST">
+        <h3>Add Table</h3>
+        <label for="heading_id">Heading ID:</label>
+        <input type="number" id="heading_id" name="heading_id" required><br><br>
+
+        <label for="table_title">Table Title:</label>
+        <input type="text" id="table_title" name="table_title" required><br><br>
+
+        <button type="submit" name="insert_table">Add Table</button>
+    </form>
+
+    <hr>
+
+    <!-- ฟอร์มสำหรับเพิ่มข้อมูลในตาราง table_rows -->
+    <form action="../php/insert.php" method="POST">
+        <h3>Add Table Row</h3>
+        <label for="table_id">Table ID:</label>
+        <input type="number" id="table_id" name="table_id" required><br><br>
+
+        <label for="variable">Variable:</label>
+        <input type="text" id="variable" name="variable" required><br><br>
+
+        <label for="value">Value:</label>
+        <input type="text" id="value" name="value" required><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea><br><br>
+
+        <button type="submit" name="insert_row">Add Row</button>
+    </form>
+</body>
+</html>
