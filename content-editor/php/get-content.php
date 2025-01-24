@@ -39,7 +39,11 @@ if ($id) {
             'project_id' => $row['project_id'],
             'category_id' => $row['category_id'],
             'content' => $row['content'],
-            'design' => json_decode($row['design'])
+            'design' => json_decode($row['design']),
+            'main_topic' => $row['main_topic'],
+            'sub_topic' => $row['sub_topic'],
+            'sub_sub_topic' => $row['sub_sub_topic'],
+            'order_number' => $row['order_number']
         ]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Content not found']);
@@ -47,7 +51,6 @@ if ($id) {
 
     $stmt->close();
 } else {
-    // กรณีไม่มี ID ให้ส่งค่าที่เกี่ยวกับการสร้างใหม่
     echo json_encode(['success' => true, 'message' => 'Create new content']);
 }
 

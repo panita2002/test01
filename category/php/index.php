@@ -1,5 +1,5 @@
 <?php
-require '../db/db.php';
+require_once 'db.php';
 
 // Function to get headings
 function getHeadings($parentId = null) {
@@ -7,24 +7,6 @@ function getHeadings($parentId = null) {
     $query = "SELECT * FROM headings WHERE parent_id " . ($parentId ? "= ?" : "IS NULL") . " ORDER BY `order`";
     $stmt = $pdo->prepare($query);
     $stmt->execute($parentId ? [$parentId] : []);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Function to get tables by heading
-function getTablesByHeading($headingId) {
-    $pdo = getPDO();
-    $query = "SELECT * FROM tables WHERE heading_id = ?";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$headingId]);
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Function to get rows of a table
-function getTableRows($tableId) {
-    $pdo = getPDO();
-    $query = "SELECT * FROM table_rows WHERE table_id = ?";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$tableId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
@@ -36,30 +18,76 @@ function getTableRows($tableId) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Viewer</title>
     <link rel="stylesheet" href="../css/style.css">
+    
     <script>
+        function toggleDropdown(element) {
+            const sublist = element.nextElementSibling;
+            if (sublist.style.display === "block") {
+                sublist.style.display = "none";
+            } else {
+                sublist.style.display = "block";
+            }
+        }
+
         function loadContent(headingId) {
-            fetch('content.php?heading_id=' + headingId)
+            fetch('../php/content.php?heading_id=' + headingId)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('content-area').innerHTML = data;
                 });
         }
+        
     </script>
 </head>
 <body>
     <div class="sidebar">
-        <h2>Headings</h2>
-        <?php
-        function displaySidebar($parentId = null) {
-            $headings = getHeadings($parentId);
-            foreach ($headings as $heading) {
-                echo '<a href="#" onclick="loadContent(' . $heading['id'] . '); return false;">' . htmlspecialchars($heading['title']) . '</a>';
-                displaySidebar($heading['id']);
-            }
-        }
+        <h2>wealth</h2>
+        <h3>Version</h3>
+            <select>
+                <option>Visual Studio 2022</option>
+                <option>Visual Studio 2019</option>
+                <option>Visual Studio 2017</option>
+                <option>Visual Studio 2015</option>
+            </select>
+        <ul>
+            <?php
+            function displaySidebar($parentId = null) {
+                $headings = getHeadings($parentId);
+                foreach ($headings as $heading) {
+                    echo '<li>';
+                    echo '<a href="#" onclick="toggleDropdown(this); return false;">' . htmlspecialchars($heading['title']) . '</a>';
+                    
+                    // ตรวจสอบว่ามีหัวข้อย่อยหรือไม่
+                    $subHeadings = getHeadings($heading['id']);
+                    if (!empty($subHeadings)) {
+                        echo '<ul style="display: none; padding-left: 20px;">';
+                        foreach ($subHeadings as $subHeading) {
+                            echo '<li>';
+                            echo '<a href="#" onclick="loadContent(' . $subHeading['id'] . '); return false;">' . htmlspecialchars($subHeading['title']) . '</a>';
+                            
+                            // ตรวจสอบว่ามีหัวข้อย่อยของย่อยหรือไม่
+                            $subSubHeadings = getHeadings($subHeading['id']);
+                            if (!empty($subSubHeadings)) {
+                                echo '<ul style="display: none; padding-left: 20px;">';
+                                foreach ($subSubHeadings as $subSubHeading) {
+                                    echo '<li>';
+                                    echo '<a href="#" onclick="loadContent(' . $subSubHeading['id'] . '); return false;">' . htmlspecialchars($subSubHeading['title']) . '</a>';
+                                    echo '</li>';
+                                }
+                                echo '</ul>';
+                            }
 
-        displaySidebar();
-        ?>
+                            echo '</li>';
+                        }
+                        echo '</ul>';
+                    }
+                    echo '</li>';
+                }
+            }
+
+            displaySidebar();
+            ?>
+        </ul>
     </div>
     <div class="content" id="content-area">
         <h1>Welcome</h1>

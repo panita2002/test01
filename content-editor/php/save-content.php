@@ -22,16 +22,21 @@ if ($conn->connect_error) {
 $data = json_decode(file_get_contents('php://input'), true);
 
 // รับข้อมูลจาก request
-$id = isset($data['id']) ? intval($data['id']) : null;
-$name = isset($data['name']) ? $data['name'] : '';
-$title = isset($data['title']) ? $data['title'] : '';
-$content = isset($data['content']) ? $data['content'] : '';
-$design = isset($data['design']) ? $data['design'] : '';
-$project_id = isset($data['project_id']) ? intval($data['project_id']) : 0;
-$category_id = isset($data['category_id']) ? intval($data['category_id']) : 0;
+$id = isset($data['id']) && is_numeric($data['id']) ? intval($data['id']) : null;
+$name = isset($data['name']) ? trim($data['name']) : ''; // ตัดช่องว่าง
+$title = isset($data['title']) ? trim($data['title']) : '';
+$content = isset($data['content']) ? trim($data['content']) : '';
+$design = isset($data['design']) ? trim($data['design']) : '';
+$project_id = isset($data['project_id']) && is_numeric($data['project_id']) ? intval($data['project_id']) : 0;
+$category_id = isset($data['category_id']) && is_numeric($data['category_id']) ? intval($data['category_id']) : 0;
+$main_topic = isset($data['main_topic']) && !empty($data['main_topic']) ? trim($data['main_topic']) : null;
+$sub_topic = isset($data['sub_topic']) && !empty($data['sub_topic']) ? trim($data['sub_topic']) : null;
+$sub_sub_topic = isset($data['sub_sub_topic']) && !empty($data['sub_sub_topic']) ? trim($data['sub_sub_topic']) : null;
+$order_number = isset($data['order_number']) && is_numeric($data['order_number']) ? intval($data['order_number']) : 0;
+
 
 // ตรวจสอบข้อมูลที่จำเป็น
-if (empty($name) || empty($title) || empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0) {
+if (empty($name) || empty($title) || empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0 || $order_number <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid input.']);
     exit;
@@ -40,16 +45,18 @@ if (empty($name) || empty($title) || empty($content) || empty($design) || $proje
 if ($id) {
     // อัปเดตข้อมูล และอัปเดตวันที่กับเวลาที่สร้าง
     $sql = "UPDATE editor_content 
-            SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ?, updated_at = CURDATE(), update_time = CURTIME() 
+            SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ?, 
+                main_topic = ?, sub_topic = ?, sub_sub_topic = ?, order_number = ?, 
+                updated_at = CURDATE(), update_time = CURTIME() 
             WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssiii", $name, $title, $content, $design, $project_id, $category_id, $id);
+    $stmt->bind_param("ssssiiissii", $name, $title, $content, $design, $project_id, $category_id, $main_topic, $sub_topic, $sub_sub_topic, $order_number, $id);
 } else {
     // สร้างข้อมูลใหม่
-    $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, created_at, created_time) 
-            VALUES (?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())";
+    $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, main_topic, sub_topic, sub_sub_topic, order_number, created_at, created_time) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssii", $name, $title, $content, $design, $project_id, $category_id);
+    $stmt->bind_param("ssssiiissi", $name, $title, $content, $design, $project_id, $category_id, $main_topic, $sub_topic, $sub_sub_topic, $order_number);
 }
 
 if ($stmt->execute()) {

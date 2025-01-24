@@ -22,7 +22,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sub_sub_topic = $_POST['sub_sub_topic'];
     $order_number = $_POST['order_number'];
     $content = $_POST['content'];
-    $design = $_POST['design'];
     $project_id = $_POST['project_id'];
     $category_id = $_POST['category_id'];
 
@@ -33,12 +32,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // SQL สำหรับการเพิ่มข้อมูล
-    $sql = "INSERT INTO editor_content (name, title, main_topic, sub_topic, sub_sub_topic, order_number, content, design, project_id, category_id, created_at, created_time)
+    $sql = "INSERT INTO editor_content (name, title, main_topic, sub_topic, sub_sub_topic, order_number, content, project_id, category_id, created_at, created_time)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())";
 
     // เตรียมคำสั่ง SQL
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssiissii", $name, $title, $main_topic, $sub_topic, $sub_sub_topic, $order_number, $content, $design, $project_id, $category_id);
+    $stmt->bind_param("sssssiissii", $name, $title, $main_topic, $sub_topic, $sub_sub_topic, $order_number, $content, $project_id, $category_id);
 
     // ตรวจสอบว่าการเพิ่มข้อมูลสำเร็จหรือไม่
     if ($stmt->execute()) {

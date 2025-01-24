@@ -26,6 +26,21 @@
             <label for="category_id">Category ID:</label>
             <input type="number" id="category_id" name="category_id" required>
         </div>
+
+        <!-- ช่องกรอกข้อมูลสำหรับฟิลด์ใหม่ -->
+        <div class="topic-group form-group">
+            <label for="main_topic">Main Topic:</label>
+            <input type="text" id="main_topic" name="main_topic">
+
+            <label for="sub_topic">Sub Topic:</label>
+            <input type="text" id="sub_topic" name="sub_topic">
+
+            <label for="sub_sub_topic">Sub Sub Topic:</label>
+            <input type="text" id="sub_sub_topic" name="sub_sub_topic">
+
+            <label for="order_number">Order Number:</label>
+            <input type="number" id="order_number" name="order_number" required>
+        </div>
     </form>
 
     <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
@@ -38,7 +53,6 @@
         const editorContainer = document.getElementById('editor-container');
         const statusElement = document.getElementById('status');
 
-        // หากไม่มี id ให้แสดงข้อความว่ากำลังสร้างเนื้อหาใหม่
         if (!id) {
             statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
             statusElement.style.color = 'blue';
@@ -74,6 +88,10 @@
                             document.getElementById("title").value = data.title || "";
                             document.getElementById("project_id").value = data.project_id || "";
                             document.getElementById("category_id").value = data.category_id || "";
+                            document.getElementById("main_topic").value = data.main_topic || "";
+                            document.getElementById("sub_topic").value = data.sub_topic || "";
+                            document.getElementById("sub_sub_topic").value = data.sub_sub_topic || "";
+                            document.getElementById("order_number").value = data.order_number || "";
 
                         } catch (error) {
                             console.error("Error loading design into Unlayer:", error);
@@ -101,15 +119,16 @@
             const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
+            const mainTopic = document.getElementById('main_topic').value || null;
+            const subTopic = document.getElementById('sub_topic').value || null;
+            const subSubTopic = document.getElementById('sub_sub_topic').value || null;
+            const orderNumber = parseInt(document.getElementById('order_number').value, 10);
 
-            if (!name || !title || isNaN(projectId) || isNaN(categoryId)) {
-                statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วน';
+            if (!name || !title || isNaN(projectId) || isNaN(categoryId) || isNaN(orderNumber)) {
+                statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
                 statusElement.style.color = 'red';
                 return;
             }
-
-            // สร้างวันที่และเวลาปัจจุบัน
-            const updatedAt = new Date().toISOString(); // รูปแบบ ISO 8601 (YYYY-MM-DDTHH:mm:ss.sssZ)
 
             unlayer.exportHtml((data) => {
                 const htmlContent = data.html;
@@ -118,26 +137,27 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            id: id || null, // ถ้ามี ID จะส่งค่า ID, ถ้าไม่มีจะเป็น null เพื่อสร้างใหม่
-                            name: name,
-                            title: title,
+                            id: id || null,
+                            name,
+                            title,
                             content: htmlContent,
                             design: JSON.stringify(design),
                             project_id: projectId,
                             category_id: categoryId,
-                            updated_at: updatedAt // เพิ่มวันที่และเวลาล่าสุด
+                            main_topic: mainTopic || null,
+                            sub_topic: subTopic || null,
+                            sub_sub_topic: subSubTopic || null,
+                            order_number: orderNumber
                         })
                     })
                     .then(response => response.json())
                     .then(result => {
+                        console.log(result); // ตรวจสอบข้อมูล response จาก API
                         if (result.success) {
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
 
-                            // หลังจากบันทึกสำเร็จ ให้ไปยังหน้า view-content.html
-                            // document.getElementById('save-button').addEventListener('click', () => {
                             window.location.href = `./view-content.html?id=${id}`;
-                        // });
 
                         } else {
                             statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
@@ -152,7 +172,6 @@
                 });
             });
         }
-
 
         document.getElementById('save-button').addEventListener('click', saveContent);
     </script>
