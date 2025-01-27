@@ -1,16 +1,75 @@
 <?php
 require_once 'db.php';
 
-// Function to get headings
-function getHeadings($parentId = null) {
+// Function to get topics from the database
+function getTopics($level, $parentValue = null) {
     $pdo = getPDO();
-    $query = "SELECT * FROM headings WHERE parent_id " . ($parentId ? "= ?" : "IS NULL") . " ORDER BY `order`";
+    $query = "SELECT * FROM editor_content WHERE ";
+
+    // Define query for each level
+    if ($level === 'main') {
+        $query .= "main_topic IS NOT NULL AND sub_topic IS NULL AND sub_sub_topic IS NULL";
+    } elseif ($level === 'sub') {
+        $query .= "main_topic = :main_topic AND sub_topic IS NOT NULL AND sub_sub_topic IS NULL";
+    } elseif ($level === 'sub_sub') {
+        $query .= "main_topic = :main_topic AND sub_topic = :sub_topic AND sub_sub_topic IS NOT NULL";
+    } else {
+        return []; // Return empty array if the level is invalid
+    }
+
     $stmt = $pdo->prepare($query);
-    $stmt->execute($parentId ? [$parentId] : []);
+
+    // Bind parameters for each level
+    if ($level === 'sub') {
+        $stmt->execute([':main_topic' => $parentValue]);
+    } elseif ($level === 'sub_sub') {
+        list($mainTopic, $subTopic) = explode("\t", $parentValue); // Split values for sub_sub
+        $stmt->execute([
+            ':main_topic' => $mainTopic,
+            ':sub_topic' => $subTopic,
+        ]);
+    } else {
+        $stmt->execute();
+    }
+
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
-?>
 
+// Function to display topics in a hierarchical structure
+function displayTopics($level, $parentValue = null) {
+    $topics = getTopics($level, $parentValue);
+
+    foreach ($topics as $topic) {
+        $topicValue = $level === 'main' ? $topic['main_topic'] : (
+            $level === 'sub' ? $topic['main_topic'] . "\t" . $topic['sub_topic'] : 
+            $topic['main_topic'] . "\t" . $topic['sub_topic'] . "\t" . $topic['sub_sub_topic']
+        );
+
+        echo '<li>';
+        echo '<a href="#" onclick="toggleDropdown(this); return false;">' . htmlspecialchars($topic[$level . '_topic']) . '</a>';
+
+        // Display content if available
+        if ($level === 'sub_sub' && isset($topic['content']) && !empty($topic['content'])) {
+            echo '<div class="content-display">';
+            echo htmlspecialchars($topic['content']); // Display content for sub_sub_topic
+            echo '</div>';
+        }
+
+        // Display child topics if applicable
+        if ($level === 'main') {
+            echo '<ul style="display: none; padding-left: 20px;">';
+            displayTopics('sub', $topic['main_topic']);
+            echo '</ul>';
+        } elseif ($level === 'sub') {
+            echo '<ul style="display: none; padding-left: 20px;">';
+            displayTopics('sub_sub', $topicValue);
+            echo '</ul>';
+        }
+
+        echo '</li>';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +77,6 @@ function getHeadings($parentId = null) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Viewer</title>
     <link rel="stylesheet" href="../css/style.css">
-    
     <script>
         function toggleDropdown(element) {
             const sublist = element.nextElementSibling;
@@ -29,69 +87,25 @@ function getHeadings($parentId = null) {
             }
         }
 
-        function loadContent(headingId) {
-            fetch('../php/content.php?heading_id=' + headingId)
+        function loadContent(projectId) {
+            fetch('../php/content.php?project_id=' + projectId)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('content-area').innerHTML = data;
                 });
         }
-        
     </script>
 </head>
 <body>
     <div class="sidebar">
-        <h2>wealth</h2>
-        <h3>Version</h3>
-            <select>
-                <option>Visual Studio 2022</option>
-                <option>Visual Studio 2019</option>
-                <option>Visual Studio 2017</option>
-                <option>Visual Studio 2015</option>
-            </select>
+        <h2>Header</h2>
         <ul>
-            <?php
-            function displaySidebar($parentId = null) {
-                $headings = getHeadings($parentId);
-                foreach ($headings as $heading) {
-                    echo '<li>';
-                    echo '<a href="#" onclick="toggleDropdown(this); return false;">' . htmlspecialchars($heading['title']) . '</a>';
-                    
-                    // ตรวจสอบว่ามีหัวข้อย่อยหรือไม่
-                    $subHeadings = getHeadings($heading['id']);
-                    if (!empty($subHeadings)) {
-                        echo '<ul style="display: none; padding-left: 20px;">';
-                        foreach ($subHeadings as $subHeading) {
-                            echo '<li>';
-                            echo '<a href="#" onclick="loadContent(' . $subHeading['id'] . '); return false;">' . htmlspecialchars($subHeading['title']) . '</a>';
-                            
-                            // ตรวจสอบว่ามีหัวข้อย่อยของย่อยหรือไม่
-                            $subSubHeadings = getHeadings($subHeading['id']);
-                            if (!empty($subSubHeadings)) {
-                                echo '<ul style="display: none; padding-left: 20px;">';
-                                foreach ($subSubHeadings as $subSubHeading) {
-                                    echo '<li>';
-                                    echo '<a href="#" onclick="loadContent(' . $subSubHeading['id'] . '); return false;">' . htmlspecialchars($subSubHeading['title']) . '</a>';
-                                    echo '</li>';
-                                }
-                                echo '</ul>';
-                            }
-
-                            echo '</li>';
-                        }
-                        echo '</ul>';
-                    }
-                    echo '</li>';
-                }
-            }
-
-            displaySidebar();
-            ?>
+            <?php displayTopics('main'); ?>
         </ul>
     </div>
     <div class="content" id="content-area">
         <h1>Welcome</h1>
-        <p>Select a heading from the sidebar to view details.</p>
+        <p>Select a topic from the sidebar to view details.</p>
     </div>
 </body>
 </html>

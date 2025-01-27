@@ -27,19 +27,18 @@
             <input type="number" id="category_id" name="category_id" required>
         </div>
 
-        <!-- ช่องกรอกข้อมูลสำหรับฟิลด์ใหม่ -->
-        <div class="topic-group form-group">
-            <label for="main_topic">Main Topic:</label>
-            <input type="text" id="main_topic" name="main_topic">
-
-            <label for="sub_topic">Sub Topic:</label>
-            <input type="text" id="sub_topic" name="sub_topic">
-
-            <label for="sub_sub_topic">Sub Sub Topic:</label>
-            <input type="text" id="sub_sub_topic" name="sub_sub_topic">
-
-            <label for="order_number">Order Number:</label>
-            <input type="number" id="order_number" name="order_number" required>
+        <div class="topic-group">
+            <label for="main-topic">Main Topic:</label>
+            <input type="text" id="main-topic" name="main-topic">
+            <label for="sub-topic">Sub Topic:</label>
+            <input type="text" id="sub-topic" name="sub-topic">
+        </div>
+        
+        <div class="subsub-order-group">
+            <label for="sub-sub-topic">Sub Sub Topic:</label>
+            <input type="text" id="sub-sub-topic" name="sub-sub-topic">
+            <label for="order-number">Order Number:</label>
+            <input type="number" id="order-number" name="order-number">
         </div>
     </form>
 
@@ -88,10 +87,10 @@
                             document.getElementById("title").value = data.title || "";
                             document.getElementById("project_id").value = data.project_id || "";
                             document.getElementById("category_id").value = data.category_id || "";
-                            document.getElementById("main_topic").value = data.main_topic || "";
-                            document.getElementById("sub_topic").value = data.sub_topic || "";
-                            document.getElementById("sub_sub_topic").value = data.sub_sub_topic || "";
-                            document.getElementById("order_number").value = data.order_number || "";
+                            document.getElementById("main-topic").value = data.main_topic || "";
+                            document.getElementById("sub-topic").value = data.sub_topic || "";
+                            document.getElementById("sub-sub-topic").value = data.sub_sub_topic || "";
+                            document.getElementById("order-number").value = data.order_number || "";
 
                         } catch (error) {
                             console.error("Error loading design into Unlayer:", error);
@@ -119,11 +118,12 @@
             const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
-            const mainTopic = document.getElementById('main_topic').value || null;
-            const subTopic = document.getElementById('sub_topic').value || null;
-            const subSubTopic = document.getElementById('sub_sub_topic').value || null;
-            const orderNumber = parseInt(document.getElementById('order_number').value, 10);
+            const mainTopic = document.getElementById('main-topic').value.trim(); // เพิ่ม trim() เพื่อตัดช่องว่าง
+            const subTopic = document.getElementById('sub-topic').value.trim();
+            const subSubTopic = document.getElementById('sub-sub-topic').value.trim();
+            const orderNumber = parseInt(document.getElementById('order-number').value, 10);
 
+            // ตรวจสอบค่าฟิลด์ที่จำเป็น
             if (!name || !title || isNaN(projectId) || isNaN(categoryId) || isNaN(orderNumber)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
                 statusElement.style.color = 'red';
@@ -133,32 +133,35 @@
             unlayer.exportHtml((data) => {
                 const htmlContent = data.html;
                 unlayer.saveDesign((design) => {
+                    const postData = {
+                        id: id || null,
+                        name,
+                        title,
+                        content: htmlContent,
+                        design: JSON.stringify(design),
+                        project_id: projectId,
+                        category_id: categoryId,
+                        main_topic: mainTopic || null, // เปลี่ยนเป็น null ถ้าไม่มีค่า
+                        sub_topic: subTopic || null,
+                        sub_sub_topic: subSubTopic || null,
+                        order_number: orderNumber
+                    };
+
+                    console.log("Sending data:", postData);
+
                     fetch('../php/save-content.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            id: id || null,
-                            name,
-                            title,
-                            content: htmlContent,
-                            design: JSON.stringify(design),
-                            project_id: projectId,
-                            category_id: categoryId,
-                            main_topic: mainTopic || null,
-                            sub_topic: subTopic || null,
-                            sub_sub_topic: subSubTopic || null,
-                            order_number: orderNumber
-                        })
+                        body: JSON.stringify(postData)
                     })
                     .then(response => response.json())
                     .then(result => {
-                        console.log(result); // ตรวจสอบข้อมูล response จาก API
+                        console.log("Server response:", result);
                         if (result.success) {
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
 
-                            window.location.href = `./view-content.html?id=${id}`;
-
+                            window.location.href = `./view-content.html?id=${result.id}`;
                         } else {
                             statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
                             statusElement.style.color = 'red';
