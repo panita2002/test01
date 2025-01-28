@@ -1,33 +1,23 @@
 <?php
-require_once 'db.php';
+if (isset($_GET['topic'])) {
+    $topic = $_GET['topic'];
 
-// รับค่า project_id (ซึ่งเป็นค่า sub_sub_topic ที่เลือกจาก sidebar)
-if (isset($_GET['project_id'])) {
-    $projectId = $_GET['project_id'];
-    
-    // คำสั่ง SQL เพื่อดึงข้อมูลจากฐานข้อมูลตาม project_id
-    $pdo = getPDO();
-    $query = "SELECT * FROM editor_content WHERE CONCAT(main_topic, '\t', sub_topic, '\t', sub_sub_topic) = :project_id";
+    // เชื่อมต่อฐานข้อมูล
+    require './db.php';
 
-    // เตรียมการ query
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([':project_id' => $projectId]);
-    
-    // ดึงข้อมูล
-    $topic = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    if ($topic) {
-        // ถ้ามีข้อมูลให้แสดง content
-        echo '<h2>' . htmlspecialchars($topic['main_topic']) . ' - ' . htmlspecialchars($topic['sub_topic']) . ' - ' . htmlspecialchars($topic['sub_sub_topic']) . '</h2>';
-        echo '<div class="content-display">';
-        echo nl2br(htmlspecialchars($topic['content']));  // แสดง content พร้อมกับแปลงการขึ้นบรรทัดใหม่
-        echo '</div>';
+    // ค้นหาข้อมูลเนื้อหาตาม topic
+    $stmt = $conn->prepare("SELECT content FROM topics WHERE title = ?");
+    $stmt->bind_param("s", $topic);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($row = $result->fetch_assoc()) {
+        echo nl2br(htmlspecialchars($row['content'])); // แสดงผลเนื้อหาแบบไม่ให้มีแท็ก HTML
     } else {
-        // ถ้าไม่พบข้อมูล
-        echo '<p>Content not found.</p>';
+        echo "<p>ไม่พบเนื้อหา</p>";
     }
-} else {
-    // ถ้าไม่มีการส่ง project_id
-    echo '<p>No project selected.</p>';
+
+    $stmt->close();
+    $conn->close();
 }
 ?>

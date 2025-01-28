@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // เตรียมคำสั่ง SQL
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sssssiissii", $name, $title, $main_topic, $sub_topic, $sub_sub_topic, $order_number, $content, $design, $project_id, $category_id);
+    $stmt->bind_param("sssssissii", $name, $title, $main_topic, $sub_topic, $sub_sub_topic, $order_number, $content, $design, $project_id, $category_id);
 
     // ตรวจสอบว่าการเพิ่มข้อมูลสำเร็จหรือไม่
     if ($stmt->execute()) {
