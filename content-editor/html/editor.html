@@ -16,7 +16,7 @@
             <input type="text" id="name" name="name" required>
             
             <label for="title">Title:</label>
-            <input type="text" id="title" name="title" required>
+            <input type="text" id="title" name="title" >
         </div>
 
         <div class="project-category-group form-group">
@@ -48,7 +48,7 @@
 
     <script>
         const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id'); // ดึง id จาก URL เช่น editor.html?id=37
+        const id = urlParams.get('id'); 
         const editorContainer = document.getElementById('editor-container');
         const statusElement = document.getElementById('status');
 
@@ -118,13 +118,13 @@
             const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
-            const mainTopic = document.getElementById('main-topic').value.trim(); // เพิ่ม trim() เพื่อตัดช่องว่าง
+            const mainTopic = document.getElementById('main-topic').value.trim();
             const subTopic = document.getElementById('sub-topic').value.trim();
             const subSubTopic = document.getElementById('sub-sub-topic').value.trim();
             const orderNumber = parseInt(document.getElementById('order-number').value, 10);
 
             // ตรวจสอบค่าฟิลด์ที่จำเป็น
-            if (!name || !title || isNaN(projectId) || isNaN(categoryId) || isNaN(orderNumber)) {
+            if (!name || isNaN(projectId) || isNaN(categoryId) || isNaN(orderNumber)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
                 statusElement.style.color = 'red';
                 return;
@@ -136,12 +136,12 @@
                     const postData = {
                         id: id || null,
                         name,
-                        title,
+                        title: title || null,
                         content: htmlContent,
                         design: JSON.stringify(design),
                         project_id: projectId,
                         category_id: categoryId,
-                        main_topic: mainTopic || null, // เปลี่ยนเป็น null ถ้าไม่มีค่า
+                        main_topic: mainTopic || null,
                         sub_topic: subTopic || null,
                         sub_sub_topic: subSubTopic || null,
                         order_number: orderNumber

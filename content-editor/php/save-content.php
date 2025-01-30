@@ -24,18 +24,18 @@ $data = json_decode(file_get_contents('php://input'), true);
 // รับข้อมูลจาก request
 $id = isset($data['id']) && is_numeric($data['id']) ? intval($data['id']) : null;
 $name = isset($data['name']) ? trim($data['name']) : '';
-$title = isset($data['title']) ? trim($data['title']) : '';
+$main_topic = isset($data['title']) && $data['title'] !== '' ? trim($data['title']) : null;
 $content = isset($data['content']) ? trim($data['content']) : '';
 $design = isset($data['design']) ? trim($data['design']) : '';
 $project_id = isset($data['project_id']) && is_numeric($data['project_id']) ? intval($data['project_id']) : 0;
 $category_id = isset($data['category_id']) && is_numeric($data['category_id']) ? intval($data['category_id']) : 0;
-$main_topic = isset($data['main_topic']) && $data['main_topic'] !== '' ? trim($data['main_topic']) : null;
+$main_topic = isset($data['main_topic']) && $data['main_topic'] !== '' ? trim($data['main_topic']) : '';
 $sub_topic = isset($data['sub_topic']) && $data['sub_topic'] !== '' ? trim($data['sub_topic']) : null;
 $sub_sub_topic = isset($data['sub_sub_topic']) && $data['sub_sub_topic'] !== '' ? trim($data['sub_sub_topic']) : null;
 $order_number = isset($data['order_number']) && is_numeric($data['order_number']) ? intval($data['order_number']) : 0;
 
 // ตรวจสอบข้อมูลที่จำเป็น
-if (empty($name) || empty($title) || empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0 || $order_number <= 0) {
+if (empty($name) || empty($main_topic) ||empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0 || $order_number <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid input. Please check the required fields.']);
     exit;

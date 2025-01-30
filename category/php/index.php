@@ -83,6 +83,7 @@
 
     $topics = [];
 
+
     while ($row = $result->fetch_assoc()) {
         $main = $row['main_topic'] ?: $row['title'];
         $sub = $row['sub_topic'];
