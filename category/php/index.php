@@ -1,108 +1,195 @@
-<?php
-require_once './db.php';
-
-// Function to get topics from the database
-function getTopics($level, $parentValue = null) {
-    $pdo = getPDO();
-    $query = "SELECT * FROM editor_content WHERE ";
-
-    if ($level === 'main') {
-        $query .= "main_topic IS NOT NULL AND sub_topic IS NULL AND sub_sub_topic IS NULL";
-    } elseif ($level === 'sub') {
-        $query .= "main_topic = :main_topic AND sub_topic IS NOT NULL AND sub_sub_topic IS NULL";
-    } elseif ($level === 'sub_sub') {
-        $query .= "main_topic = :main_topic AND sub_topic = :sub_topic AND sub_sub_topic IS NOT NULL";
-    } else {
-        return [];
-    }
-
-    $stmt = $pdo->prepare($query);
-
-    if ($level === 'sub') {
-        $stmt->execute([':main_topic' => $parentValue]);
-    } elseif ($level === 'sub_sub') {
-        list($mainTopic, $subTopic) = explode("\t", $parentValue);
-        $stmt->execute([
-            ':main_topic' => $mainTopic,
-            ':sub_topic' => $subTopic,
-        ]);
-    } else {
-        $stmt->execute();
-    }
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-// Function to display topics in a hierarchical structure
-function displayTopics($level, $parentValue = null) {
-    $topics = getTopics($level, $parentValue);
-
-    foreach ($topics as $topic) {
-        $topicValue = $level === 'main' ? $topic['main_topic'] : (
-            $level === 'sub' ? $topic['main_topic'] . "\t" . $topic['sub_topic'] :
-            $topic['main_topic'] . "\t" . $topic['sub_topic'] . "\t" . $topic['sub_sub_topic']
-        );
-
-        echo '<li>';
-        echo '<button class="toggle-btn" onclick="toggleDropdown(this); return false;">+</button> ';
-        echo '<a href="#" onclick="loadContent(\'' . htmlspecialchars($topicValue) . '\'); return false;">' . htmlspecialchars($topic[$level . '_topic']) . '</a>';
-
-        if ($level === 'main') {
-            echo '<ul class="nested">';
-            displayTopics('sub', $topic['main_topic']);
-            echo '</ul>';
-        } elseif ($level === 'sub') {
-            echo '<ul class="nested">';
-            displayTopics('sub_sub', $topicValue);
-            echo '</ul>';
-        }
-
-        echo '</li>';
-    }
-}
-?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Viewer</title>
+    <title>ระบบแสดงเอกสาร</title>
     <link rel="stylesheet" href="../css/style.css">
-    
-    <script>
-        function toggleDropdown(element) {
-            const sublist = element.nextElementSibling.nextElementSibling;
-            if (sublist.style.display === "block") {
-                sublist.style.display = "none";
-                element.innerText = "+";
-            } else {
-                sublist.style.display = "block";
-                element.innerText = "-";
-            }
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            padding: 0;
         }
 
-        function loadContent(topic) {
-            fetch('./content.php?topic=' + encodeURIComponent(topic))
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('content-area').innerHTML = data;
-                })
-                .catch(err => {
-                    document.getElementById('content-area').innerHTML = "<p>Error loading content.</p>";
-                });
+        .sidebar {
+            font-family: Arial, sans-serif;
+            width: 250px;
+            border-right: 1px solid #ccc;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 10px;
         }
-    </script>
+
+        .topic {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            margin: 2px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topic:hover {
+            background-color: #ddd;
+        }
+
+        .sub-container, .sub-sub-container {
+            padding-left: 20px;
+        }
+
+        .sub-container {
+            display: none;
+        }
+
+        .sub-sub-container {
+            display: none;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 20px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .active-topic {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+
+    <!-- Sidebar -->
     <div class="sidebar">
-        <h2>Document Viewer</h2>
-        <ul>
-            <?php displayTopics('main'); ?>
-        </ul>
+    <?php
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "test01";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    $conn->set_charset("utf8mb4");
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT id, title, main_topic, sub_topic, sub_sub_topic, content FROM editor_content ORDER BY category_id, order_number";
+    $result = $conn->query($sql);
+
+    $topics = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $main = $row['main_topic'] ?: $row['title'];
+        $sub = $row['sub_topic'];
+        $sub_sub = $row['sub_sub_topic'];
+        $content = $row['content'];
+
+        if (!isset($topics[$main])) {
+            $topics[$main] = ['content' => '', 'id' => null, 'subtopics' => []];
+        }
+
+        if (empty($sub) && empty($sub_sub)) {
+            $topics[$main]['content'] = $content;
+            $topics[$main]['id'] = $row['id'];
+        }
+
+        if ($sub) {
+            if (!isset($topics[$main]['subtopics'][$sub])) {
+                $topics[$main]['subtopics'][$sub] = ['content' => '', 'id' => null, 'subtopics' => []];
+            }
+
+            if (empty($sub_sub)) {
+                $topics[$main]['subtopics'][$sub]['content'] = $content;
+                $topics[$main]['subtopics'][$sub]['id'] = $row['id'];
+            }
+
+            if ($sub_sub) {
+                $topics[$main]['subtopics'][$sub]['subtopics'][] = [
+                    'id' => $row['id'],
+                    'title' => $sub_sub,
+                    'content' => $content
+                ];
+            }
+        }
+    }
+
+    $conn->close();
+    ?>
+
+    <script>
+    function handleTopicClick(element, id, event) {
+        event.stopPropagation();
+        
+        // Remove active class from all topics
+        document.querySelectorAll('.topic').forEach(topic => {
+            topic.classList.remove('active-topic');
+        });
+        
+        // Add active class to clicked topic
+        element.classList.add('active-topic');
+        
+        // Load content if ID exists
+        if (id) {
+            loadContent(id);
+        }
+
+        // Toggle dropdown if it exists
+        const subContainer = element.nextElementSibling;
+        if (subContainer && (subContainer.classList.contains('sub-container') || subContainer.classList.contains('sub-sub-container'))) {
+            if (subContainer.style.display === "none" || subContainer.style.display === "") {
+                subContainer.style.display = "block";
+            } else {
+                subContainer.style.display = "none";
+            }
+        }
+    }
+
+    function loadContent(id) {
+        fetch(`get-content.php?id=${id}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('content-area').innerHTML = data.content;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('content-area').innerHTML = 'เกิดข้อผิดพลาดในการโหลดเนื้อหา';
+            });
+    }
+    </script>
+
+    <?php foreach ($topics as $main_topic => $main_data): ?>
+        <div class="topic main-topic" 
+             onclick="handleTopicClick(this, <?php echo $main_data['id'] ? $main_data['id'] : 'null'; ?>, event)">
+            <span><?php echo htmlspecialchars($main_topic, ENT_QUOTES, 'UTF-8'); ?></span>
+        </div>
+        <div class="sub-container">
+            <?php foreach ($main_data['subtopics'] as $sub_topic => $sub_data): ?>
+                <div class="topic sub-topic"
+                     onclick="handleTopicClick(this, <?php echo $sub_data['id'] ? $sub_data['id'] : 'null'; ?>, event)">
+                    <span><?php echo htmlspecialchars($sub_topic, ENT_QUOTES, 'UTF-8'); ?></span>
+                </div>
+                <div class="sub-sub-container">
+                    <?php foreach ($sub_data['subtopics'] as $sub_sub_topic): ?>
+                        <div class="topic sub-sub-topic" 
+                             onclick="handleTopicClick(this, <?php echo $sub_sub_topic['id']; ?>, event)">
+                            <?php echo htmlspecialchars($sub_sub_topic['title'], ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endforeach; ?>
     </div>
-    <div class="content" id="content-area">
-        <h1>Welcome</h1>
-        <p>Select a topic from the sidebar to view details.</p>
+
+    <!-- Content Area -->
+    <div class="content-area" id="content-area">
+        กรุณาเลือกหัวข้อจากเมนูด้านซ้ายเพื่อดูเนื้อหา
     </div>
+
 </body>
 </html>
