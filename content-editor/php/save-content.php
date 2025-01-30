@@ -24,7 +24,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 // รับข้อมูลจาก request
 $id = isset($data['id']) && is_numeric($data['id']) ? intval($data['id']) : null;
 $name = isset($data['name']) ? trim($data['name']) : '';
-$main_topic = isset($data['title']) && $data['title'] !== '' ? trim($data['title']) : null;
+$title = isset($data['title']) && $data['title'] !== '' ? trim($data['title']) : null;
 $content = isset($data['content']) ? trim($data['content']) : '';
 $design = isset($data['design']) ? trim($data['design']) : '';
 $project_id = isset($data['project_id']) && is_numeric($data['project_id']) ? intval($data['project_id']) : 0;
@@ -32,10 +32,9 @@ $category_id = isset($data['category_id']) && is_numeric($data['category_id']) ?
 $main_topic = isset($data['main_topic']) && $data['main_topic'] !== '' ? trim($data['main_topic']) : '';
 $sub_topic = isset($data['sub_topic']) && $data['sub_topic'] !== '' ? trim($data['sub_topic']) : null;
 $sub_sub_topic = isset($data['sub_sub_topic']) && $data['sub_sub_topic'] !== '' ? trim($data['sub_sub_topic']) : null;
-$order_number = isset($data['order_number']) && is_numeric($data['order_number']) ? intval($data['order_number']) : 0;
-
+$sub_sub_sub_topic = isset($data['sub_sub_sub_topic']) && $data['sub_sub_sub_topic'] !== '' ? trim($data['sub_sub_sub_topic']) : null;
 // ตรวจสอบข้อมูลที่จำเป็น
-if (empty($name) || empty($main_topic) ||empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0 || $order_number <= 0) {
+if (empty($name) || empty($main_topic) ||empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid input. Please check the required fields.']);
     exit;
@@ -45,12 +44,12 @@ try {
     if ($id) {
         $sql = "UPDATE editor_content 
                 SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ?, 
-                    main_topic = ?, sub_topic = ?, sub_sub_topic = ?, order_number = ?, 
+                    main_topic = ?, sub_topic = ?, sub_sub_topic = ?, sub_sub_sub_topic = ?, 
                     updated_at = CURDATE(), update_time = CURTIME() 
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssiisssii", 
+            "ssssiissssi", 
             $name, 
             $title, 
             $content, 
@@ -60,15 +59,15 @@ try {
             $main_topic, 
             $sub_topic, 
             $sub_sub_topic, 
-            $order_number, 
+            $sub_sub_sub_topic, 
             $id
         );
     } else {
-        $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, main_topic, sub_topic, sub_sub_topic, order_number, created_at, created_time) 
+        $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, main_topic, sub_topic, sub_sub_topic, sub_sub_sub_topic, created_at, created_time) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssiisssi", 
+            "ssssiissss", 
             $name, 
             $title, 
             $content, 
@@ -78,7 +77,7 @@ try {
             $main_topic, 
             $sub_topic, 
             $sub_sub_topic, 
-            $order_number
+            $sub_sub_sub_topic
         );
     }
 

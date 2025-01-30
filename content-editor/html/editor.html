@@ -37,8 +37,9 @@
         <div class="subsub-order-group">
             <label for="sub-sub-topic">Sub Sub Topic:</label>
             <input type="text" id="sub-sub-topic" name="sub-sub-topic">
-            <label for="order-number">Order Number:</label>
-            <input type="number" id="order-number" name="order-number">
+            <label for="sub-sub-sub-topic">Sub Sub sub Topic:</label>
+            <input type="text" id="sub-sub-sub-topic" name="sub-sub-sub-topic">
+            
         </div>
     </form>
 
@@ -90,7 +91,7 @@
                             document.getElementById("main-topic").value = data.main_topic || "";
                             document.getElementById("sub-topic").value = data.sub_topic || "";
                             document.getElementById("sub-sub-topic").value = data.sub_sub_topic || "";
-                            document.getElementById("order-number").value = data.order_number || "";
+                            document.getElementById("sub-sub-sub-topic").value = data.sub_sub_sub_topic || "";
 
                         } catch (error) {
                             console.error("Error loading design into Unlayer:", error);
@@ -121,10 +122,10 @@
             const mainTopic = document.getElementById('main-topic').value.trim();
             const subTopic = document.getElementById('sub-topic').value.trim();
             const subSubTopic = document.getElementById('sub-sub-topic').value.trim();
-            const orderNumber = parseInt(document.getElementById('order-number').value, 10);
+            const subsubSubTopic = document.getElementById('sub-sub-sub-topic').value.trim();
 
             // ตรวจสอบค่าฟิลด์ที่จำเป็น
-            if (!name || isNaN(projectId) || isNaN(categoryId) || isNaN(orderNumber)) {
+            if (!name ||!mainTopic ||isNaN(projectId) || isNaN(categoryId)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
                 statusElement.style.color = 'red';
                 return;
@@ -144,7 +145,7 @@
                         main_topic: mainTopic || null,
                         sub_topic: subTopic || null,
                         sub_sub_topic: subSubTopic || null,
-                        order_number: orderNumber
+                        sub_sub_sub_topic: subsubSubTopic || null,
                     };
 
                     console.log("Sending data:", postData);

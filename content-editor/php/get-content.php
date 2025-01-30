@@ -43,7 +43,7 @@ if ($id) {
             'main_topic' => $row['main_topic'],
             'sub_topic' => $row['sub_topic'],
             'sub_sub_topic' => $row['sub_sub_topic'],
-            'order_number' => $row['order_number']
+            'sub_sub_sub_topic' => $row['sub_sub_sub_topic']
         ]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Content not found']);
