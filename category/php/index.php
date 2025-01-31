@@ -15,7 +15,7 @@
     $servername = "localhost";
     $username = "root";
     $password = "";
-    $dbname = "test01";
+    $dbname = "test02";
 
     $conn = new mysqli($servername, $username, $password, $dbname);
     $conn->set_charset("utf8mb4");
@@ -41,27 +41,45 @@
             $topics[$main] = ['content' => '', 'id' => null, 'subtopics' => []];
         }
 
-        if (empty($sub) && empty($sub_sub)) {
+        if (empty($sub) && empty($sub_sub) && empty($sub_sub_sub)) {
             $topics[$main]['content'] = $content;
             $topics[$main]['id'] = $row['id'];
         }
 
         if ($sub) {
             if (!isset($topics[$main]['subtopics'][$sub])) {
-                $topics[$main]['subtopics'][$sub] = ['content' => '', 'id' => null, 'subtopics' => []];
+                $topics[$main]['subtopics'][$sub] = [
+                    'content' => '', 
+                    'id' => null, 
+                    'subtopics' => []];
             }
 
-            if (empty($sub_sub)) {
+            if (empty($sub_sub) && empty($sub_sub_sub)) {
                 $topics[$main]['subtopics'][$sub]['content'] = $content;
                 $topics[$main]['subtopics'][$sub]['id'] = $row['id'];
             }
 
             if ($sub_sub) {
-                $topics[$main]['subtopics'][$sub]['subtopics'][] = [
-                    'id' => $row['id'],
-                    'title' => $sub_sub,
-                    'content' => $content
-                ];
+                if (!isset($topics[$main]['subtopics'][$sub]['subtopics'][$sub_sub])) {
+                    $topics[$main]['subtopics'][$sub]['subtopics'][$sub_sub] = [
+                        'content' => '',
+                        'id' => null,
+                        'subtopics' => []
+                    ];
+                }
+
+                if (empty($sub_sub_sub)) {
+                    $topics[$main]['subtopics'][$sub]['subtopics'][$sub_sub]['content'] = $content;
+                    $topics[$main]['subtopics'][$sub]['subtopics'][$sub_sub]['id'] = $row['id'];
+                }
+
+                if ($sub_sub_sub) {
+                    $topics[$main]['subtopics'][$sub]['subtopics'][$sub_sub]['subtopics'][] = [
+                        'id' => $row['id'],
+                        'title' => $sub_sub_sub,
+                        'content' => $content
+                    ];
+                }
             }
         }
     }
@@ -88,7 +106,9 @@
 
         // Toggle dropdown if it exists
         const subContainer = element.nextElementSibling;
-        if (subContainer && (subContainer.classList.contains('sub-container') || subContainer.classList.contains('sub-sub-container'))) {
+        if (subContainer && (subContainer.classList.contains('sub-container') || 
+                            subContainer.classList.contains('sub-sub-container') ||
+                            subContainer.classList.contains('sub-sub-sub-container'))) {
             if (subContainer.style.display === "none" || subContainer.style.display === "") {
                 subContainer.style.display = "block";
             } else {
@@ -110,28 +130,36 @@
     }
     </script>
 
-    <?php foreach ($topics as $main_topic => $main_data): ?>
-        <div class="topic main-topic" 
-             onclick="handleTopicClick(this, <?php echo $main_data['id'] ? $main_data['id'] : 'null'; ?>, event)">
-            <span><?php echo htmlspecialchars($main_topic, ENT_QUOTES, 'UTF-8'); ?></span>
-        </div>
-        <div class="sub-container">
-            <?php foreach ($main_data['subtopics'] as $sub_topic => $sub_data): ?>
-                <div class="topic sub-topic"
-                     onclick="handleTopicClick(this, <?php echo $sub_data['id'] ? $sub_data['id'] : 'null'; ?>, event)">
-                    <span><?php echo htmlspecialchars($sub_topic, ENT_QUOTES, 'UTF-8'); ?></span>
-                </div>
-                <div class="sub-sub-container">
-                    <?php foreach ($sub_data['subtopics'] as $sub_sub_topic): ?>
-                        <div class="topic sub-sub-topic" 
-                             onclick="handleTopicClick(this, <?php echo $sub_sub_topic['id']; ?>, event)">
-                            <?php echo htmlspecialchars($sub_sub_topic['title'], ENT_QUOTES, 'UTF-8'); ?>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endforeach; ?>
+        <?php foreach ($topics as $main_topic => $main_data): ?>
+            <div class="topic main-topic" 
+                onclick="handleTopicClick(this, <?php echo $main_data['id'] ? $main_data['id'] : 'null'; ?>, event)">
+                <span><?php echo htmlspecialchars($main_topic, ENT_QUOTES, 'UTF-8'); ?></span>
+            </div>
+            <div class="sub-container">
+                <?php foreach ($main_data['subtopics'] as $sub_topic => $sub_data): ?>
+                    <div class="topic sub-topic"
+                        onclick="handleTopicClick(this, <?php echo $sub_data['id'] ? $sub_data['id'] : 'null'; ?>, event)">
+                        <span><?php echo htmlspecialchars($sub_topic, ENT_QUOTES, 'UTF-8'); ?></span>
+                    </div>
+                    <div class="sub-sub-container">
+                        <?php foreach ($sub_data['subtopics'] as $sub_sub_topic => $sub_sub_data): ?>
+                            <div class="topic sub-sub-topic" 
+                                onclick="handleTopicClick(this, <?php echo $sub_sub_data['id'] ? $sub_sub_data['id'] : 'null'; ?>, event)">
+                                <span><?php echo htmlspecialchars($sub_sub_topic, ENT_QUOTES, 'UTF-8'); ?></span>
+                            </div>
+                            <div class="sub-sub-sub-container">
+                                <?php foreach ($sub_sub_data['subtopics'] as $sub_sub_sub_topic): ?>
+                                    <div class="topic sub-sub-sub-topic" 
+                                        onclick="handleTopicClick(this, <?php echo $sub_sub_sub_topic['id']; ?>, event)">
+                                        <span><?php echo htmlspecialchars($sub_sub_sub_topic['title'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endforeach; ?>
     </div>
 
     <!-- Content Area -->

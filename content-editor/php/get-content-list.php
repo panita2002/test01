@@ -7,7 +7,7 @@ include_once '../db/db-connection.php';
 $servername = "localhost";
 $username = "root";
 $password = "";
-$database = "test01";  // ใช้ฐานข้อมูลที่คุณต้องการ
+$database = "test02";  // ใช้ฐานข้อมูลที่คุณต้องการ
 
 $conn = new mysqli($servername, $username, $password, $database);
 

@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "test01";
+$dbname = "test02";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 $conn->set_charset("utf8mb4");
