@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor</title>
+    <title>เพิ่มเนื้อหาใหม่</title>
     <link rel="stylesheet" href="../css/editor.css">
     <script src="https://editor.unlayer.com/embed.js"></script>
 </head>
 <body>
-    <h1>แก้ไขเนื้อหา</h1>
+    <h1>เพิ่มเนื้อหาใหม่</h1>
 
     <form id="content-form">
         <div class="name-title-group form-group">
@@ -44,113 +44,70 @@
         </div>
     </form>
 
-    <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
-    <button id="save-button">บันทึก</button>
+    <div id="editor-container" style="height: 500px; border: 1px solid #ccc; margin: 20px 0;"></div>
+    
+    <div class="button-group">
+        <button id="save-button" class="primary-button">บันทึก</button>
+        <!-- <button id="cancel-button" class="secondary-button" onclick="window.history.back()">ยกเลิก</button> -->
+    </div>
+    
     <p id="status"></p>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const id = urlParams.get('id'); 
-        const editorContainer = document.getElementById('editor-container');
         const statusElement = document.getElementById('status');
 
-        if (!id) {
-            statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
-            statusElement.style.color = 'blue';
-        }
-
-        // Initialize Unlayer
+        // Initialize Unlayer with empty content
         unlayer.init({
             id: 'editor-container',
             projectId: 0,
             displayMode: 'email'
         });
 
-        // โหลดข้อมูลจาก API เมื่อมี id
-        if (id) {
-            fetch(`../php/get-content.php?id=${id}`)
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        try {
-                            if (data.design) {
-                                unlayer.loadDesign(data.design); // โหลด design object
-                            } else if (data.content) {
-                                unlayer.setHTML(data.content); // โหลด HTML string
-                            } else {
-                                throw new Error("ไม่มีข้อมูลที่สามารถโหลดได้");
-                            }
-
-                            // อัปเดตค่าฟิลด์
-                            document.getElementById("name").value = data.name || "";
-                            document.getElementById("title").value = data.title || "";
-                            document.getElementById("project_id").value = data.project_id || "";
-                            document.getElementById("category_id").value = data.category_id || "";
-                            document.getElementById("main-topic").value = data.main_topic || "";
-                            document.getElementById("sub-topic").value = data.sub_topic || "";
-                            document.getElementById("sub-sub-topic").value = data.sub_sub_topic || "";
-                            document.getElementById("sub-sub-sub-topic").value = data.sub_sub_sub_topic || "";
-
-                        } catch (error) {
-                            console.error("Error loading design into Unlayer:", error);
-                            statusElement.textContent = "เกิดข้อผิดพลาดในการโหลดเนื้อหาเข้าสู่ editor";
-                            statusElement.style.color = "red";
-                        }
-                    } else {
-                        statusElement.textContent = `ไม่พบเนื้อหาสำหรับ ID ${id}`;
-                        statusElement.style.color = "red";
-                    }
-                })
-                .catch(error => {
-                    console.error("Error loading content:", error);
-                    statusElement.textContent = "เกิดข้อผิดพลาดในการโหลดเนื้อหา";
-                    statusElement.style.color = "red";
-                });
-        }
+        // แสดงข้อความแนะนำ
+        statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
+        statusElement.style.color = 'blue';
 
         // บันทึกเนื้อหา
         function saveContent() {
             statusElement.textContent = 'กำลังบันทึก...';
             statusElement.style.color = 'blue';
 
-            const name = document.getElementById('name').value;
-            const title = document.getElementById('title').value;
+            // เก็บค่าจากฟอร์ม
+            const name = document.getElementById('name').value.trim();
+            const title = document.getElementById('title').value.trim();
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
             const mainTopic = document.getElementById('main-topic').value.trim();
             const subTopic = document.getElementById('sub-topic').value.trim();
             const subSubTopic = document.getElementById('sub-sub-topic').value.trim();
-            const subsubSubTopic = document.getElementById('sub-sub-sub-topic').value.trim();
+            const subSubSubTopic = document.getElementById('sub-sub-sub-topic').value.trim();
 
-            // ตรวจสอบค่าฟิลด์ที่จำเป็น
-            if (!name ||!mainTopic ||isNaN(projectId) || isNaN(categoryId)) {
-                statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
+            // ตรวจสอบข้อมูลที่จำเป็น
+            if (!name || !mainTopic || isNaN(projectId) || isNaN(categoryId)) {
+                statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น (ช่องที่มีเครื่องหมาย *)';
                 statusElement.style.color = 'red';
                 return;
             }
 
+            // Export HTML และ Design
             unlayer.exportHtml((data) => {
                 const htmlContent = data.html;
                 unlayer.saveDesign((design) => {
                     const postData = {
-                        id: id || null,
+                        id: null, // เป็น null เสมอเพราะเป็นการเพิ่มใหม่
                         name,
                         title: title || null,
                         content: htmlContent,
                         design: JSON.stringify(design),
                         project_id: projectId,
                         category_id: categoryId,
-                        main_topic: mainTopic || null,
+                        main_topic: mainTopic,
                         sub_topic: subTopic || null,
                         sub_sub_topic: subSubTopic || null,
-                        sub_sub_sub_topic: subsubSubTopic || null,
+                        sub_sub_sub_topic: subSubSubTopic || null
                     };
 
-                    console.log("Sending data:", postData);
-
+                    // ส่งข้อมูลไปยัง API
                     fetch('../php/save-content.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -158,12 +115,13 @@
                     })
                     .then(response => response.json())
                     .then(result => {
-                        console.log("Server response:", result);
                         if (result.success) {
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
-
-                            window.location.href = `./view-content.html?id=${result.id}`;
+                            // ไปยังหน้าแสดงเนื้อหาที่เพิ่งสร้าง
+                            setTimeout(() => {
+                                window.location.href = `./view-content.html?id=${result.id}`;
+                            }, 1000);
                         } else {
                             statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
                             statusElement.style.color = 'red';
@@ -178,6 +136,7 @@
             });
         }
 
+        // เพิ่ม Event Listeners
         document.getElementById('save-button').addEventListener('click', saveContent);
     </script>
 </body>
