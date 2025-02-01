@@ -3,7 +3,7 @@
 $servername = "localhost"; // หรือ IP ของเซิร์ฟเวอร์
 $username = "root"; // ชื่อผู้ใช้ MySQL
 $password = ""; // รหัสผ่าน MySQL
-$dbname = "test01"; // ชื่อฐานข้อมูล
+$dbname = "test02"; // ชื่อฐานข้อมูล
 
 // สร้างการเชื่อมต่อ
 $conn = new mysqli($servername, $username, $password, $dbname);

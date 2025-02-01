@@ -1,15 +1,14 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-include_once '../db/db-connection.php';
-
 // เชื่อมต่อฐานข้อมูล
 $servername = "localhost";
 $username = "root";
 $password = "";
-$database = "test02";  // ใช้ฐานข้อมูลที่คุณต้องการ
+$database = "test02";
 
 $conn = new mysqli($servername, $username, $password, $database);
+mysqli_set_charset($conn, "utf8"); // เพิ่มการรองรับภาษาไทย
 
 // ตรวจสอบการเชื่อมต่อ
 if ($conn->connect_error) {
@@ -18,19 +17,26 @@ if ($conn->connect_error) {
     exit;
 }
 
-// ดึงข้อมูลจากตารางใหม่
-$sql = "SELECT id, name, main_topic, sub_topic, sub_sub_topic, sub_sub_sub_topic, created_at FROM editor_content ORDER BY id DESC";
-$result = $conn->query($sql);
+try {
+    // ดึงข้อมูลจากตาราง
+    $sql = "SELECT id, name, main_topic, sub_topic, sub_sub_topic, sub_sub_sub_topic, created_at 
+            FROM editor_content 
+            ORDER BY id DESC";
+    $result = $conn->query($sql);
 
-if ($result->num_rows > 0) {
+    if ($result === false) {
+        throw new Exception($conn->error);
+    }
+
     $contentList = [];
     while ($row = $result->fetch_assoc()) {
         $contentList[] = $row;
     }
-    echo json_encode($contentList);
-} else {
-    echo json_encode([]);
+    echo json_encode($contentList, JSON_UNESCAPED_UNICODE);
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['error' => $e->getMessage()]);
+} finally {
+    $conn->close();
 }
-
-$conn->close();
 ?>

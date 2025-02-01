@@ -9,7 +9,7 @@ body {
 
 .sidebar {
     width: 310px;
-    height: 570px;
+    height: auto;
     background-color: #ffffff;
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
@@ -20,10 +20,9 @@ body {
 
 .content-area {
     flex-grow: 1;
-    height: 570px;
-    margin: 20px;
+    height: auto;
+    padding: 20px;
     overflow-y: auto;
-    overflow-x: hidden;
     flex: 1;
 }
 
