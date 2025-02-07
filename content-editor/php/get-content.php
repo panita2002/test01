@@ -1,18 +1,16 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-include_once '../db/db-connection.php';
 
-// ข้อมูลการเชื่อมต่อกับฐานข้อมูล
 $servername = "localhost";
 $username = "root";
 $password = "";
 $database = "test02";
 
-// เชื่อมต่อฐานข้อมูล
+
 $conn = new mysqli($servername, $username, $password, $database);
 
-// ตรวจสอบการเชื่อมต่อฐานข้อมูล
+
 if ($conn->connect_error) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $conn->connect_error]);
@@ -22,7 +20,6 @@ if ($conn->connect_error) {
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
 if ($id) {
-    // ดึงข้อมูลจากฐานข้อมูลตาม ID
     $sql = "SELECT * FROM editor_content WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
@@ -40,10 +37,10 @@ if ($id) {
             'category_id' => $row['category_id'],
             'content' => $row['content'],
             'design' => json_decode($row['design']),
-            'main_topic' => $row['main_topic'],
-            'sub_topic' => $row['sub_topic'],
-            'sub_sub_topic' => $row['sub_sub_topic'],
-            'sub_sub_sub_topic' => $row['sub_sub_sub_topic']
+            'primary_topic' => $row['primary_topic'],
+            'secondary_topic' => $row['secondary_topic'],
+            'tertiary_topic' => $row['tertiary_topic'],
+            'quaternary_topic' => $row['quaternary_topic']
         ]);
     } else {
         echo json_encode(['success' => false, 'message' => 'Content not found']);

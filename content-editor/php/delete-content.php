@@ -1,8 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-include_once '../db/db-connection.php';
-
 // ข้อมูลการเชื่อมต่อกับฐานข้อมูล
 $servername = "localhost";
 $username = "root";

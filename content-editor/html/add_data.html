@@ -73,17 +73,17 @@
             statusElement.style.color = 'blue';
 
             // เก็บค่าจากฟอร์ม
-            const name = document.getElementById('name').value.trim();
-            const title = document.getElementById('title').value.trim();
+            const name = document.getElementById('name').value;
+            const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
-            const mainTopic = document.getElementById('main-topic').value.trim();
-            const subTopic = document.getElementById('sub-topic').value.trim();
-            const subSubTopic = document.getElementById('sub-sub-topic').value.trim();
-            const subSubSubTopic = document.getElementById('sub-sub-sub-topic').value.trim();
+            const primaryTopic = document.getElementById('primary-topic').value.trim();
+            const secondaryTopic = document.getElementById('secondary-topic').value.trim();
+            const tertiaryTopic = document.getElementById('tertiary-topic').value.trim();
+            const quaternaryTopic = document.getElementById('quaternary-topic').value.trim();
 
             // ตรวจสอบข้อมูลที่จำเป็น
-            if (!name || !mainTopic || isNaN(projectId) || isNaN(categoryId)) {
+            if (!name || !primaryTopic || isNaN(projectId) || isNaN(categoryId)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น (ช่องที่มีเครื่องหมาย *)';
                 statusElement.style.color = 'red';
                 return;
@@ -101,10 +101,10 @@
                         design: JSON.stringify(design),
                         project_id: projectId,
                         category_id: categoryId,
-                        main_topic: mainTopic,
-                        sub_topic: subTopic || null,
-                        sub_sub_topic: subSubTopic || null,
-                        sub_sub_sub_topic: subSubSubTopic || null
+                        primary_topic: primaryTopic || null,
+                        secondary_topic: secondaryTopic || null,
+                        tertiary_topic: tertiaryTopic || null,
+                        quaternary_topic: quaternaryTopic || null,
                     };
 
                     // ส่งข้อมูลไปยัง API

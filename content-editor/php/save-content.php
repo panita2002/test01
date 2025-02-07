@@ -1,15 +1,12 @@
 <?php
+
 header('Content-Type: application/json; charset=utf-8');
 
-include_once '../db/db-connection.php';
-
-// ข้อมูลการเชื่อมต่อกับฐานข้อมูล
 $servername = "localhost";
 $username = "root";
 $password = "";
 $database = "test02";
 
-// เชื่อมต่อฐานข้อมูล
 $conn = new mysqli($servername, $username, $password, $database);
 
 if ($conn->connect_error) {
@@ -29,12 +26,12 @@ $content = isset($data['content']) ? trim($data['content']) : '';
 $design = isset($data['design']) ? trim($data['design']) : '';
 $project_id = isset($data['project_id']) && is_numeric($data['project_id']) ? intval($data['project_id']) : 0;
 $category_id = isset($data['category_id']) && is_numeric($data['category_id']) ? intval($data['category_id']) : 0;
-$main_topic = isset($data['main_topic']) && $data['main_topic'] !== '' ? trim($data['main_topic']) : '';
-$sub_topic = isset($data['sub_topic']) && $data['sub_topic'] !== '' ? trim($data['sub_topic']) : null;
-$sub_sub_topic = isset($data['sub_sub_topic']) && $data['sub_sub_topic'] !== '' ? trim($data['sub_sub_topic']) : null;
-$sub_sub_sub_topic = isset($data['sub_sub_sub_topic']) && $data['sub_sub_sub_topic'] !== '' ? trim($data['sub_sub_sub_topic']) : null;
+$primary_topic = isset($data['primary_topic']) && $data['primary_topic'] !== '' ? trim($data['primary_topic']) : '';
+$secondary_topic = isset($data['secondary_topic']) && $data['secondary_topic'] !== '' ? trim($data['secondary_topic']) : null;
+$tertiary_topic = isset($data['tertiary_topic']) && $data['tertiary_topic'] !== '' ? trim($data['tertiary_topic']) : null;
+$quaternary_topic = isset($data['quaternary_topic']) && $data['quaternary_topic'] !== '' ? trim($data['quaternary_topic']) : null;
 // ตรวจสอบข้อมูลที่จำเป็น
-if (empty($name) || empty($main_topic) ||empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0) {
+if (empty($name) || empty($primary_topic) ||empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid input. Please check the required fields.']);
     exit;
@@ -44,40 +41,40 @@ try {
     if ($id) {
         $sql = "UPDATE editor_content 
                 SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ?, 
-                    main_topic = ?, sub_topic = ?, sub_sub_topic = ?, sub_sub_sub_topic = ?, 
+                    primary_topic = ?, secondary_topic = ?, tertiary_topic = ?, quaternary_topic = ?, 
                     updated_at = CURDATE(), update_time = CURTIME() 
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
             "ssssiissssi", 
-            $name, 
-            $title, 
-            $content, 
-            $design, 
-            $project_id, 
-            $category_id, 
-            $main_topic, 
-            $sub_topic, 
-            $sub_sub_topic, 
-            $sub_sub_sub_topic, 
+            $name,
+            $title,
+            $content,
+            $design,
+            $project_id,
+            $category_id,
+            $primary_topic,
+            $secondary_topic,
+            $tertiary_topic,
+            $quaternary_topic,
             $id
         );
     } else {
-        $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, main_topic, sub_topic, sub_sub_topic, sub_sub_sub_topic, created_at, created_time) 
+        $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, created_at, created_time) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
             "ssssiissss", 
-            $name, 
-            $title, 
-            $content, 
-            $design, 
-            $project_id, 
-            $category_id, 
-            $main_topic, 
-            $sub_topic, 
-            $sub_sub_topic, 
-            $sub_sub_sub_topic
+            $name,
+            $title,
+            $content,
+            $design,
+            $project_id,
+            $category_id,
+            $primary_topic,
+            $secondary_topic,
+            $tertiary_topic,
+            $quaternary_topic
         );
     }
 

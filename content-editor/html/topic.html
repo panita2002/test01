@@ -10,7 +10,7 @@
 <body>
     <h1>แก้ไขเนื้อหา</h1>
 
-    <form id="content-form">
+    <form id="content-form" method="POST" action="../php/save-content.php">
         <div class="name-title-group form-group">
             <label for="name">Name:<span class="required">*</span></label>
             <input type="text" id="name" name="name" required>
@@ -26,24 +26,115 @@
             <label for="category_id">Category ID:<span class="required">*</span></label>
             <input type="number" id="category_id" name="category_id" required>
         </div>
+        <div class="topic-group">
+            <label>Primary Topic:<span class="required">*</span></label>
+            <div class="topic-container">
+                <select class="topic-select" id="primary-topic" name="primary_topic" required>
+                    <option value="">เลือกหัวข้อ</option>
+                </select>
+                <input type="text" class="input-field" id="primary-topic-input">
+                <button type="button" class="toggle-input" onclick="toggleInput('primary-topic')">กรอกชื่อหัวข้อ</button>
+            </div>
+        </div>
 
         <div class="topic-group">
-            <label for="primary-topic">Main Topic:<span class="required">*</span></label>
-            <input type="text" id="primary-topic" name="primary-topic" required>
-            
-            <label for="secondary-topic">Sub Topic:</label>
-            <input type="text" id="secondary-topic" name="secondary-topic">
+            <label>Secondary Topic:</label>
+            <div class="topic-container">
+                <select class="topic-select" id="secondary-topic" name="secondary_topic">
+                    <option value="">เลือกหัวข้อ</option>
+                </select>
+                <input type="text" class="input-field" id="secondary-topic-input">
+                <button type="button" class="toggle-input" onclick="toggleInput('secondary-topic')">กรอกชื่อหัวข้อ</button>
+            </div>
         </div>
-        
-        <div class="subsub-order-group">
-            <label for="tertiary-topic">Sub Sub Topic:</label>
-            <input type="text" id="tertiary-topic" name="tertiary-topic">
-            
-            <label for="quaternary-topic">Sub Sub Sub Topic:</label>
-            <input type="text" id="quaternary-topic" name="quaternary-topic">
+
+        <div class="topic-group">
+            <label>Tertiary Topic:</label>
+            <div class="topic-container">
+                <select class="topic-select" id="tertiary-topic" name="tertiary_topic">
+                    <option value="">เลือกหัวข้อ</option>
+                </select>
+                <input type="text" class="input-field" id="tertiary-topic-input">
+                <button type="button" class="toggle-input" onclick="toggleInput('tertiary-topic')">กรอกชื่อหัวข้อ</button>
+            </div>
+        </div>
+
+        <div class="topic-group">
+            <label>Quaternary Topic:</label>
+            <div class="topic-container">
+                <select class="topic-select" id="quaternary-topic" name="quaternary_topic">
+                    <option value="">เลือกหัวข้อ</option>
+                </select>
+                <input type="text" class="input-field" id="quaternary-topic-input">
+                <button type="button" class="toggle-input" onclick="toggleInput('quaternary-topic')">กรอกชื่อหัวข้อ</button>
+            </div>
         </div>
     </form>
 
+    <script>
+        // โหลดหัวข้อเมื่อหน้าเว็บโหลดเสร็จ
+    document.addEventListener('DOMContentLoaded', function() {
+        loadAllTopics();
+    });
+
+    function loadAllTopics() {
+    fetch('../php/get_topics.php')
+        .then(response => response.json())
+        .then(topics => {
+            populateDropdown('primary-topic', topics.primary);
+            populateDropdown('secondary-topic', topics.secondary);
+            populateDropdown('tertiary-topic', topics.tertiary);
+            populateDropdown('quaternary-topic', topics.quaternary);
+        })
+        .catch(error => console.error('Error loading topics:', error));
+}
+
+function populateDropdown(id, topics) {
+    const select = document.getElementById(id);
+    select.innerHTML = '<option value="">เลือกหัวข้อ</option>';
+    topics.forEach(topic => {
+        const option = document.createElement('option');
+        option.value = topic;
+        option.textContent = topic;
+        select.appendChild(option);
+    });
+}
+
+
+function toggleInput(baseId) {
+    const select = document.getElementById(baseId);
+    const input = document.getElementById(`${baseId}-input`);
+    const button = select.parentElement.querySelector('.toggle-input');
+
+    if (select.style.display !== 'none') {
+        select.style.display = 'none';
+        input.style.display = 'block';
+        button.textContent = 'เลือกจากรายการ';
+        input.required = true;
+        select.required = false;
+    } else {
+        select.style.display = 'block';
+        input.style.display = 'none';
+        button.textContent = 'กรอกชื่อหัวข้อ';
+        select.required = true;
+        input.required = false;
+    }
+}
+
+
+    function getTopicValue(baseId) {
+    const select = document.getElementById(baseId);
+    const input = document.getElementById(`${baseId}-input`);
+    return select.style.display === 'none' ? input.value.trim() : select.value.trim();
+}
+
+
+        </script>
+    
+      
+    </form>
+    
+    
     <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
     <button id="save-button">บันทึก</button>
     <p id="status"></p>
@@ -59,7 +150,7 @@
             statusElement.style.color = 'blue';
         }
 
-        // Initialize Unlayer
+        // Initialize Unlayer editor
         unlayer.init({
             id: 'editor-container',
             projectId: 0,
@@ -126,7 +217,7 @@
             const quaternaryTopic = document.getElementById('quaternary-topic').value.trim();
 
             // ตรวจสอบค่าฟิลด์ที่จำเป็น
-            if (!name ||!primaryTopic ||isNaN(projectId) || isNaN(categoryId)) {
+            if (!name ||!mainTopic ||isNaN(projectId) || isNaN(categoryId)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
                 statusElement.style.color = 'red';
                 return;

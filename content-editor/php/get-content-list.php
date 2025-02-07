@@ -19,7 +19,7 @@ if ($conn->connect_error) {
 
 try {
     // ดึงข้อมูลจากตาราง
-    $sql = "SELECT id, name, main_topic, sub_topic, sub_sub_topic, sub_sub_sub_topic, created_at 
+    $sql = "SELECT id, name, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, created_at 
             FROM editor_content 
             ORDER BY id DESC";
     $result = $conn->query($sql);
