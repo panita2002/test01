@@ -1,0 +1,96 @@
+/* ปรับ header และ navbar ให้ดูดีขึ้น */
+header {
+    padding: 0 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+/* .navbar-brand img {
+    width: 70px;
+    height: 70px;
+    margin-right: 200px;
+} */
+
+.navbar-nav {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin: 0;
+    padding: 0;
+    margin-left: auto;
+}
+
+.nav-item {
+    display: inline-block;
+}
+
+.nav-link {
+    color: #000000;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 8px 15px;
+    transition: 0.3s;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+/* ปรับ dropdown menu */
+.nav-item.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background: #ffffff;
+    color: #000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    top: 100%;
+    left: 0;
+    padding: 10px 20px;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #000;
+    display: block;
+    transition: 0.3s;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background: #007bff;
+    color: #ffffff;
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+
+
