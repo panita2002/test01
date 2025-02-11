@@ -1,13 +1,13 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// ข้อมูลการเชื่อมต่อกับฐานข้อมูล
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $database = "test02";
 
-// เชื่อมต่อฐานข้อมูล
+
 $conn = new mysqli($servername, $username, $password, $database);
 
 if ($conn->connect_error) {
@@ -16,7 +16,7 @@ if ($conn->connect_error) {
     exit;
 }
 
-// รับ ID จากคำขอ
+
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
 if (!$id) {
@@ -25,7 +25,7 @@ if (!$id) {
     exit;
 }
 
-// ลบข้อมูลจากฐานข้อมูล
+
 $sql = "DELETE FROM editor_content WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {

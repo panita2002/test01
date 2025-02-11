@@ -3,7 +3,7 @@ header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET");
 
-require_once "../db/db-connection.php"; // เชื่อมต่อฐานข้อมูล
+require_once "../db/db-connection.php"; 
 
 $sql = "SELECT * FROM topics";
 $result = $conn->query($sql);
