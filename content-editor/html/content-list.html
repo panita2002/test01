@@ -5,30 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content List</title>
     <link rel="stylesheet" href="../css/content-list.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
+
 <body>
-    <div class="header">
-        <h1>รายการเนื้อหา</h1>
-        <button class="add-button" onclick="location.href='./add_data.html'">+ เพิ่มเนื้อหา</button>
+    <div class id="header"></div>
+    <div class="container-list" style="margin-top: 100px;">
+        <div class="container mt-4">
+            <h1 class="text-center" style="font-size: 32px;">รายการเนื้อหา</h1>
+            <button class="btn btn-primary mb-3" onclick="location.href='./add_data.html'">+ เพิ่มเนื้อหา</button>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table">
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>ชื่อเนื้อหา</th>
+                            <th>วันที่สร้าง</th>
+                            <th>การจัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="content-list">
+                        <tr>
+                            <td colspan="4" class="text-center">กำลังโหลดข้อมูล...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <table>
-        <thead>
-            <tr>
-                <th>ลำดับ</th>
-                <th>ชื่อเนื้อหา</th>
-                <th>วันที่สร้าง</th>
-                <th>การจัดการ</th>
-            </tr>
-        </thead>
-        <tbody id="content-list">
-            <tr>
-                <td colspan="4">กำลังโหลดข้อมูล...</td>
-            </tr>
-        </tbody>
-    </table>
 
     <script>
-        // ฟังก์ชันดึงข้อมูลรายการเนื้อหา
+        fetch("./header.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("header").innerHTML = data;
+            })
+            .catch(error => console.error("Error loading header:", error));
+
         function loadContentList() {
             fetch('../php/get-content-list.php')
                 .then(response => {
@@ -68,17 +82,15 @@
                 });
         }
 
-        // ฟังก์ชันเปิดหน้าดูรายละเอียด
         function viewContent(id) {
             window.location.href = `./view-content.html?id=${id}`;
         }
 
-        // ฟังก์ชันเปิดหน้าแก้ไข
+
         function editContent(id) {
             window.location.href = `./editor.html?id=${id}`;
         }
 
-        // ฟังก์ชันลบเนื้อหา
         function deleteContent(id) {
             if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบเนื้อหานี้?')) {
                 fetch(`../php/delete-content.php?id=${id}`, { method: 'DELETE' })
@@ -86,7 +98,7 @@
                     .then(result => {
                         if (result.success) {
                             alert('ลบเนื้อหาสำเร็จ');
-                            loadContentList(); // โหลดรายการใหม่หลังลบสำเร็จ
+                            loadContentList(); 
                         } else {
                             alert(`เกิดข้อผิดพลาด: ${result.message}`);
                         }
@@ -98,7 +110,6 @@
             }
         }
 
-        // โหลดรายการเนื้อหาเมื่อเปิดหน้า
         loadContentList();
     </script>
 </body>

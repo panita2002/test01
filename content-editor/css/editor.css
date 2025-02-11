@@ -12,7 +12,7 @@ body {
 
 .form-group {
     display: flex;
-    gap: 20px; /* เว้นระยะห่างระหว่างฟอร์ม */
+    gap: 20px; 
     margin-bottom: 15px;
 }
 
@@ -26,19 +26,16 @@ body {
     flex: 1;
 }
 
-/* จัดให้ name และ title อยู่ข้างกัน */
 .name-title-group {
     display: flex;
     gap: 20px;
 }
 
-/* จัดให้ project_id และ category_id อยู่ข้างกัน */
 .project-category-group {
     display: flex;
     gap: 20px;
 }
 
-/* จัดให้ Main Topic และ Sub Topic อยู่ข้างกัน */
 .topic-group {
     display: flex;
     gap: 20px;
@@ -55,7 +52,6 @@ body {
     flex: 1;
 }
 
-/* จัดให้ Sub Sub Topic และ Order Number อยู่ข้างกัน */
 .subsub-order-group {
     display: flex;
     gap: 20px;

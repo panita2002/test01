@@ -1,7 +1,6 @@
-/* ปรับ header และ navbar ให้ดูดีขึ้น */
 header {
     padding: 0 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1);
     position: fixed;
     width: 100%;
     top: 0;
@@ -12,7 +11,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
+    padding: 10px 10px;
 }
 
 .navbar-brand {
@@ -24,39 +23,38 @@ header {
     text-decoration: none;
 }
 
-/* .navbar-brand img {
-    width: 70px;
-    height: 70px;
-    margin-right: 200px;
-} */
-
 .navbar-nav {
     list-style: none;
     display: flex;
     gap: 15px;
-    margin: 0;
-    padding: 0;
-    margin-left: auto;
-}
+    margin-left: auto !important;}
 
 .nav-item {
     display: inline-block;
 }
 
+.navbar-navLeft {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+    margin-right: auto; 
+}
+
+
 .nav-link {
-    color: #000000;
+    color: #000;
     text-decoration: none;
     font-size: 1rem;
     padding: 8px 15px;
-    transition: 0.3s;
+    transition: background 0.3s ease-in-out;
 }
 
 .nav-link:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(0, 123, 255, 0.2);
     border-radius: 5px;
 }
 
-/* ปรับ dropdown menu */
+
 .nav-item.dropdown {
     position: relative;
 }
@@ -64,23 +62,22 @@ header {
 .dropdown-menu {
     display: none;
     position: absolute;
-    background: #ffffff;
-    color: #000;
+    background: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     top: 100%;
-    left: 0;
+    right: 0;
     padding: 10px 20px;
     min-width: 150px;
     z-index: 1000;
 }
 
 .dropdown-menu .dropdown-item {
-    padding: 10px 15px;
-    text-decoration: none;
-    color: #000;
     display: block;
-    transition: 0.3s;
+    padding: 10px 15px;
+    color: #000;
+    text-decoration: none;
+    transition: background 0.3s;
 }
 
 .dropdown-menu .dropdown-item:hover {
@@ -91,6 +88,9 @@ header {
 .nav-item.dropdown:hover .dropdown-menu {
     display: block;
 }
-
-
-
+.sidebar {
+    margin-top: 120px;
+}
+.content-area {
+    margin-top: 110px;
+}

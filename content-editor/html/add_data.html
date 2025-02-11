@@ -6,9 +6,14 @@
     <title>เพิ่มเนื้อหาใหม่</title>
     <link rel="stylesheet" href="../css/editor.css">
     <script src="https://editor.unlayer.com/embed.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
 <body>
-    <h1>เพิ่มเนื้อหาใหม่</h1>
+    <div class id="header"></div>
+
+
+    <h1 style="margin-top: 100px; font-size: 30px;">เพิ่มเนื้อหาใหม่</h1>
 
     <form id="content-form">
         <div class="name-title-group form-group">
@@ -48,31 +53,34 @@
     
     <div class="button-group">
         <button id="save-button" class="primary-button">บันทึก</button>
-        <!-- <button id="cancel-button" class="secondary-button" onclick="window.history.back()">ยกเลิก</button> -->
+        
     </div>
     
     <p id="status"></p>
 
     <script>
+        fetch("./header.html")
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById("header").innerHTML = data;
+            })
+            .catch(error => console.error("Error loading header:", error));
+
         const statusElement = document.getElementById('status');
 
-        // Initialize Unlayer with empty content
         unlayer.init({
             id: 'editor-container',
             projectId: 0,
             displayMode: 'email'
         });
 
-        // แสดงข้อความแนะนำ
         statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
         statusElement.style.color = 'blue';
 
-        // บันทึกเนื้อหา
         function saveContent() {
             statusElement.textContent = 'กำลังบันทึก...';
             statusElement.style.color = 'blue';
 
-            // เก็บค่าจากฟอร์ม
             const name = document.getElementById('name').value;
             const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
@@ -82,19 +90,18 @@
             const tertiaryTopic = document.getElementById('tertiary-topic').value.trim();
             const quaternaryTopic = document.getElementById('quaternary-topic').value.trim();
 
-            // ตรวจสอบข้อมูลที่จำเป็น
+            
             if (!name || !primaryTopic || isNaN(projectId) || isNaN(categoryId)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น (ช่องที่มีเครื่องหมาย *)';
                 statusElement.style.color = 'red';
                 return;
             }
 
-            // Export HTML และ Design
             unlayer.exportHtml((data) => {
                 const htmlContent = data.html;
                 unlayer.saveDesign((design) => {
                     const postData = {
-                        id: null, // เป็น null เสมอเพราะเป็นการเพิ่มใหม่
+                        id: null, 
                         name,
                         title: title || null,
                         content: htmlContent,
@@ -107,7 +114,6 @@
                         quaternary_topic: quaternaryTopic || null,
                     };
 
-                    // ส่งข้อมูลไปยัง API
                     fetch('../php/save-content.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -118,7 +124,6 @@
                         if (result.success) {
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
-                            // ไปยังหน้าแสดงเนื้อหาที่เพิ่งสร้าง
                             setTimeout(() => {
                                 window.location.href = `./view-content.html?id=${result.id}`;
                             }, 1000);
@@ -136,7 +141,6 @@
             });
         }
 
-        // เพิ่ม Event Listeners
         document.getElementById('save-button').addEventListener('click', saveContent);
     </script>
 </body>

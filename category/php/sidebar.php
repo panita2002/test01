@@ -79,20 +79,16 @@
     function handleTopicClick(element, id, event) {
         event.stopPropagation();
         
-        // Remove active class from all topics
         document.querySelectorAll('.topic').forEach(topic => {
             topic.classList.remove('active-topic');
         });
         
-        // Add active class to clicked topic
         element.classList.add('active-topic');
         
-        // Load content if ID exists
         if (id) {
             loadContent(id);
         }
 
-        // Toggle dropdown if it exists
         const subContainer = element.nextElementSibling;
         if (subContainer && (subContainer.classList.contains('sub-container') || 
                             subContainer.classList.contains('sub-sub-container') ||
@@ -150,4 +146,3 @@
         <?php endforeach; ?>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

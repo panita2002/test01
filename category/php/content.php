@@ -5,10 +5,9 @@
     <div class="container-custom">
         <!-- ส่วนข้อความ -->
         <div class="text-section">
-            <h1>Wealth Management System Limited</h1><br>
-            <ul><p>เอกสารคู่มือประกอบการติดตั้งโปรแกรม</p> <br><br></ul>
+            <h1>Wealth Management System Limited</h1>
+            <p>เอกสารคู่มือประกอบการติดตั้งโปรแกรม</p> <br>
             
-            <!-- ตารางการ์ด -->
             <div class="grid-section">
                 <div class="grid-item" onclick="window.location.href='../../content-editor/html/content-list.html'">
                     <img src="../../assets/checklist.png" alt="Image">
@@ -22,9 +21,8 @@
             </div>
         </div>
 
-        <!-- ส่วนรูปภาพ -->
         <div class="image-section">
-            <img src="../../assets/images.png" alt="Image">
+            <img src="../../assets/images1.png" alt="Image">
         </div>
     </div>
 </div>
