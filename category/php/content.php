@@ -3,7 +3,6 @@
     <link rel="stylesheet" href="../css/content.css">
 <div class="content-box">
     <div class="container-custom">
-        <!-- ส่วนข้อความ -->
         <div class="text-section">
             <h1>Wealth Management System Limited</h1>
             <p>เอกสารคู่มือประกอบการติดตั้งโปรแกรม</p> <br>

@@ -11,7 +11,7 @@
 
 <body>
     <div class id="header"></div>
-    <div class="container-list" style="margin-top: 100px;">
+    <div class="container-list" style="margin-top: 120px;">
         <div class="container mt-4">
             <h1 class="text-center" style="font-size: 32px;">รายการเนื้อหา</h1>
             <button class="btn btn-primary mb-3" onclick="location.href='./add_data.html'">+ เพิ่มเนื้อหา</button>
@@ -19,11 +19,11 @@
                 <table class="table table-bordered table-hover">
                     <thead class="table">
                         <tr>
-                            <th>ลำดับ</th>
-                            <th>ชื่อเนื้อหา</th>
-                            <th>วันที่สร้าง</th>
-                            <th>การจัดการ</th>
-                        </tr>
+                            <th style="text-align: center;">ลำดับ</th>
+                            <th style="text-align: center;">ชื่อเนื้อหา</th>
+                            <th style="text-align: center;">วันที่สร้าง</th>
+                            <th style="text-align: center;">การจัดการ</th>
+                        </tr>                        
                     </thead>
                     <tbody id="content-list">
                         <tr>
@@ -63,13 +63,13 @@
                     data.forEach((item, index) => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${index + 1}</td>
+                            <td style="text-align: center;">${index + 1}</td>
                             <td>${item.name}</td>
                             <td>${item.created_at}</td>
                             <td>
-                                <button onclick="viewContent(${item.id})">ดูรายละเอียด</button>
-                                <button onclick="editContent(${item.id})">แก้ไข</button>
-                                <button onclick="deleteContent(${item.id})" style="color: white;">ลบ</button>
+                                <button1 onclick="viewContent(${item.id})">ดูรายละเอียด</button1>
+                                <button2 onclick="editContent(${item.id})">แก้ไข</button2>
+                                <button3 onclick="deleteContent(${item.id})" style="color: white;">ลบ</button3>
                             </td>
                         `;
                         tbody.appendChild(row);

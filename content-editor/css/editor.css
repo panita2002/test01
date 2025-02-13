@@ -1,7 +1,9 @@
 body {
     font-family: Arial, sans-serif;
 }
-
+h1{
+    padding-left: 20px;
+}
 #content-form {
     display: flex;
     flex-direction: column;

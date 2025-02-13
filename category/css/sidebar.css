@@ -11,7 +11,7 @@ body {
     margin-top: 100px;
     width: 300px;
     height: auto;
-    background-color: #ffffff;
+    background-color: #0f62ba;
     padding: 10px;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
     overflow-y: auto;
@@ -32,10 +32,11 @@ body {
 .topic {
     cursor: pointer;
     font-weight: bold;
+    color: #ffffff;
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 5px;
-    background-color: #f0f0f0;
+    /* background-color: #f0f0f0; */
     margin: 2px 0;
     display: flex;
     justify-content: space-between;
@@ -43,7 +44,7 @@ body {
 }
 
 .topic:hover {
-    background-color: #ddd;
+    background-color: #3979b1;
 }
 
 .sub-container, .sub-sub-container, .sub-sub-sub-container {
@@ -53,13 +54,13 @@ body {
 }
 
 .sub-topic {
-    background: #eee;
+    /* background: #eee; */
     border-radius: 5px;
     padding: 8px;
 }
 
 .sub-sub-topic {
-    background: #f9f9f9;
+    /* background: #f9f9f9; */
     margin-left: 10px;
     padding: 8px;
     border-radius: 5px;
@@ -69,7 +70,7 @@ body {
     font-size: 1em;
 }
 .active-topic {
-    background-color: #e0e0e0;
+    background-color: #5e90d1;
     font-weight: bold;
 }
 
