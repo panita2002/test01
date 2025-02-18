@@ -5,7 +5,7 @@ header {
     position: fixed;
     width: 100%;
     top: 0;
-    z-index: 1000;    
+    z-index: 1000;
     height: 100px;
 }
 
@@ -18,14 +18,14 @@ header {
 .navbar-brand {
     display: flex;
     align-items: center;
-
 }
 
 .navbar-nav {
     list-style: none;
     display: flex;
     gap: 15px;
-    margin-left: auto !important;}
+    margin-left: auto !important;
+}
 
 .nav-item {
     display: inline-block;
@@ -35,9 +35,8 @@ header {
     list-style: none;
     display: flex;
     gap: 15px;
-    margin-right: auto; 
+    margin-right: auto;
 }
-
 
 .nav-link {
     color: #ffffff !important;
@@ -51,7 +50,6 @@ header {
     background: rgba(255, 255, 255, 0.356);
     border-radius: 5px;
 }
-
 
 .nav-item.dropdown {
     position: relative;
@@ -85,12 +83,9 @@ header {
 .nav-item.dropdown:hover .dropdown-menu {
     display: block;
 }
-/* .sidebar {
-    margin-top: 100px;
-}
-.content-area {
-    margin-top: 100px;
-} */
-.sidebar, .content-area {
-    padding-top: 0px;
+
+.btn {
+    padding: 6px 12px;
+    font-size: 1rem;
+    border-radius: 5px;
 }

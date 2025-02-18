@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['id'])) {
+    header("Location: ../../login/html/login.html");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -10,7 +18,9 @@
 
 </head>
 <body>
-    <div class id="header"></div>
+
+<?php include('../../category/php/header.php'); ?>
+
 
     <h1 style="margin-top: 120px; font-size: 30px;">เพิ่มเนื้อหาใหม่</h1>
 
@@ -32,19 +42,19 @@
         </div>
 
         <div class="topic-group">
-            <label for="main-topic">Primary Topic:<span class="required">*</span></label>
-            <input type="text" id="main-topic" name="main-topic" required>
+            <label for="primary-topic">Primary Topic:<span class="required">*</span></label>
+            <input type="text" id="primary-topic" name="primary-topic" required>
             
-            <label for="sub-topic">Secondary Topic:</label>
-            <input type="text" id="sub-topic" name="sub-topic">
+            <label for="secondary-topic">Secondary Topic:</label>
+            <input type="text" id="secondary-topic" name="secondary-topic">
         </div>
         
         <div class="subsub-order-group">
-            <label for="sub-sub-topic">Tertiary Topic:</label>
-            <input type="text" id="sub-sub-topic" name="sub-sub-topic">
+            <label for="tertiary-topic">Tertiary Topic:</label>
+            <input type="text" id="tertiary-topic" name="tertiary-topic">
             
-            <label for="sub-sub-sub-topic">Quaternary Topic:</label>
-            <input type="text" id="sub-sub-sub-topic" name="sub-sub-sub-topic">
+            <label for="quaternary-topic">Quaternary Topic:</label>
+            <input type="text" id="quaternary-topic" name="quaternary-topic">
         </div>
     </form>
 
@@ -58,13 +68,6 @@
     <p id="status"></p>
 
     <script>
-        fetch("./header.html")
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("header").innerHTML = data;
-            })
-            .catch(error => console.error("Error loading header:", error));
-
         const statusElement = document.getElementById('status');
 
         unlayer.init({
@@ -113,7 +116,7 @@
                         quaternary_topic: quaternaryTopic || null,
                     };
 
-                    fetch('../php/save-content.php', {
+                    fetch('./save-content.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(postData)
@@ -124,7 +127,7 @@
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
                             setTimeout(() => {
-                                window.location.href = `./view-content.html?id=${result.id}`;
+                                window.location.href = `../html/view-content.html?id=${result.id}`;
                             }, 1000);
                         } else {
                             statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;

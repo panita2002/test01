@@ -1,3 +1,11 @@
+<?php
+session_start();
+if (!isset($_SESSION['id'])) {
+    header("Location: ../../login/html/login.html");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,11 +18,13 @@
 </head>
 
 <body>
-    <div class id="header"></div>
+
+<?php include('../../category/php/header.php'); ?>
+
     <div class="container-list" style="margin-top: 120px;">
         <div class="container mt-4">
             <h1 class="text-center" style="font-size: 32px;">รายการเนื้อหา</h1>
-            <button class="btn btn-primary mb-3" onclick="location.href='./add_data.html'">+ เพิ่มเนื้อหา</button>
+            <button class="btn btn-primary mb-3" onclick="location.href='./add_data.php'">+ เพิ่มเนื้อหา</button>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                     <thead class="table">
@@ -36,15 +46,8 @@
     </div>
 
     <script>
-        fetch("./header.html")
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById("header").innerHTML = data;
-            })
-            .catch(error => console.error("Error loading header:", error));
-
         function loadContentList() {
-            fetch('../php/get-content-list.php')
+            fetch('./get-content-list.php')
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
@@ -83,17 +86,17 @@
         }
 
         function viewContent(id) {
-            window.location.href = `./view-content.html?id=${id}`;
+            window.location.href = `../html/view-content.html?id=${id}`;
         }
 
 
         function editContent(id) {
-            window.location.href = `./editor.html?id=${id}`;
+            window.location.href = `../html/editor.html?id=${id}`;
         }
 
         function deleteContent(id) {
             if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบเนื้อหานี้?')) {
-                fetch(`../php/delete-content.php?id=${id}`, { method: 'DELETE' })
+                fetch(`./delete-content.php?id=${id}`, { method: 'DELETE' })
                     .then(response => response.json())
                     .then(result => {
                         if (result.success) {

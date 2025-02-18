@@ -1,3 +1,4 @@
+<body>
 <div class="content-area" id="content-area">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/content.css">
@@ -8,11 +9,11 @@
             <p>เอกสารคู่มือประกอบการติดตั้งโปรแกรม</p> <br>
             
             <div class="grid-section">
-                <div class="grid-item" onclick="window.location.href='../../content-editor/html/content-list.html'">
+                <div class="grid-item" onclick="window.location.href='../../content-editor/php/content-list.php'">
                     <img src="../../assets/checklist.png" alt="Image">
                     <p>Content-list</p>
                 </div>
-                <div class="grid-item" onclick="window.location.href='../../content-editor/html/add_data.html'">
+                <div class="grid-item" onclick="window.location.href='../../content-editor/php/add_data.php'">
                     <img src="../../assets/edit.png" alt="Image">
                     <p>Add Data</p>
                 </div>
@@ -25,3 +26,4 @@
         </div>
     </div>
 </div>
+</body>

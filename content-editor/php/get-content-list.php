@@ -21,7 +21,7 @@ try {
     
     $sql = "SELECT id, name, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, created_at 
             FROM editor_content 
-            ORDER BY id DESC";
+            ORDER BY name ASC";
     $result = $conn->query($sql);
 
     if ($result === false) {

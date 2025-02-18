@@ -1,0 +1,150 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+}
+
+.container {
+    display: flex;
+    background: white;
+    width: 900px;
+    height: 500px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.welcome-section {
+    background: linear-gradient(45deg, #0066ff, #0052cc);
+    width: 50%;
+    padding: 50px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-section h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.welcome-section p {
+    font-size: 14px;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.circle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.circle-1 {
+    width: 200px;
+    height: 200px;
+    bottom: -50px;
+    left: -50px;
+}
+
+.circle-2 {
+    width: 150px;
+    height: 150px;
+    top: -30px;
+    right: -30px;
+}
+
+.form-section {
+    width: 50%;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-section h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    padding-right: 40px;
+}
+
+.form-group input:focus {
+    border-color: #0066ff;
+}
+
+.form-group button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+}
+
+.remember-forgot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.sign-in-btn {
+    background: #0066ff;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.sign-in-other {
+    background: white;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 12px;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.signup-link {
+    text-align: center;
+    font-size: 14px;
+}
+
+.signup-link a {
+    color: #0066ff;
+    text-decoration: none;
+}
