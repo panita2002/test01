@@ -1,10 +1,15 @@
 <?php
 session_start();
 if (!isset($_SESSION['id'])) {
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+
     header("Location: ../../login/html/login.html");
     exit();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,8 +28,18 @@ if (!isset($_SESSION['id'])) {
 
     <div class="container-list" style="margin-top: 120px;">
         <div class="container mt-4">
-            <h1 class="text-center" style="font-size: 32px;">รายการเนื้อหา</h1>
-            <button class="btn btn-primary mb-3" onclick="location.href='./add_data.php'">+ เพิ่มเนื้อหา</button>
+            <h1 class="text-center" style="font-size: 32px;">Content List</h1>
+
+            <div class="breadcrumbs-container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="../../category/php/index.php">หน้าหลัก</a></li>
+            <li class="breadcrumb-item active" aria-current="page">รายการเนื้อหา</li>
+        </ol>
+    </nav>
+</div>
+
+            <button class="btn btn-primary mb-3" onclick="location.href='./add_data.php'">+ Add Data</button>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                     <thead class="table">
@@ -86,12 +101,12 @@ if (!isset($_SESSION['id'])) {
         }
 
         function viewContent(id) {
-            window.location.href = `../html/view-content.html?id=${id}`;
+            window.location.href = `./view-content.php?id=${id}`;
         }
 
 
         function editContent(id) {
-            window.location.href = `../html/editor.html?id=${id}`;
+            window.location.href = `./editor.php?id=${id}`;
         }
 
         function deleteContent(id) {

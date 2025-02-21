@@ -1,3 +1,14 @@
+<?php
+session_start();
+if (!isset($_SESSION['id'])) {
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+
+    header("Location: ../../login/html/login.html");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,17 +17,26 @@
     <title>Editor</title>
     <link rel="stylesheet" href="../css/editor.css">
     <script src="https://editor.unlayer.com/embed.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>แก้ไขเนื้อหา</h1>
+<?php include('../../category/php/header.php'); ?>
 
-    <form id="content-form" method="POST" action="../php/save-content.php">
+    <h1 style="margin-top: 120px; font-size: 30px;">Edit</h1>
+    <div class="breadcrumbs-container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" id="editor-breadcrumb" style="padding-left: 20px;">
+            <li class="breadcrumb-item"><a href="../../category/php/index.php">หน้าหลัก</a></li>
+            <li class="breadcrumb-item"><a href="./content-list.php">รายการเนื้อหา</a></li>
+            <li class="breadcrumb-item active" aria-current="page">แก้ไขเนื้อหา</li>
+        </ol>
+    </nav>
+</div>
+
+    <form id="content-form">
         <div class="name-title-group form-group">
             <label for="name">Name:<span class="required">*</span></label>
             <input type="text" id="name" name="name" required>
-            
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title">
         </div>
 
         <div class="project-category-group form-group">
@@ -26,115 +46,24 @@
             <label for="category_id">Category ID:<span class="required">*</span></label>
             <input type="number" id="category_id" name="category_id" required>
         </div>
-        <div class="topic-group">
-            <label>Primary Topic:<span class="required">*</span></label>
-            <div class="topic-container">
-                <select class="topic-select" id="primary-topic" name="primary_topic" required>
-                    <option value="">เลือกหัวข้อ</option>
-                </select>
-                <input type="text" class="input-field" id="primary-topic-input">
-                <button type="button" class="toggle-input" onclick="toggleInput('primary-topic')">กรอกชื่อหัวข้อ</button>
-            </div>
-        </div>
 
         <div class="topic-group">
-            <label>Secondary Topic:</label>
-            <div class="topic-container">
-                <select class="topic-select" id="secondary-topic" name="secondary_topic">
-                    <option value="">เลือกหัวข้อ</option>
-                </select>
-                <input type="text" class="input-field" id="secondary-topic-input">
-                <button type="button" class="toggle-input" onclick="toggleInput('secondary-topic')">กรอกชื่อหัวข้อ</button>
-            </div>
+            <label for="primary-topic">Primary Topic:<span class="required">*</span></label>
+            <input type="text" id="primary-topic" name="primary-topic" required>
+            
+            <label for="secondary-topic">Secondary Topic:</label>
+            <input type="text" id="secondary-topic" name="secondary-topic">
         </div>
-
-        <div class="topic-group">
-            <label>Tertiary Topic:</label>
-            <div class="topic-container">
-                <select class="topic-select" id="tertiary-topic" name="tertiary_topic">
-                    <option value="">เลือกหัวข้อ</option>
-                </select>
-                <input type="text" class="input-field" id="tertiary-topic-input">
-                <button type="button" class="toggle-input" onclick="toggleInput('tertiary-topic')">กรอกชื่อหัวข้อ</button>
-            </div>
-        </div>
-
-        <div class="topic-group">
-            <label>Quaternary Topic:</label>
-            <div class="topic-container">
-                <select class="topic-select" id="quaternary-topic" name="quaternary_topic">
-                    <option value="">เลือกหัวข้อ</option>
-                </select>
-                <input type="text" class="input-field" id="quaternary-topic-input">
-                <button type="button" class="toggle-input" onclick="toggleInput('quaternary-topic')">กรอกชื่อหัวข้อ</button>
-            </div>
+        
+        <div class="subsub-order-group">
+            <label for="tertiary-topic">Tertiary Topic:</label>
+            <input type="text" id="tertiary-topic" name="tertiary-topic">
+            
+            <label for="quaternary-topic">Quaternary Topic:</label>
+            <input type="text" id="quaternary-topic" name="quaternary-topic">
         </div>
     </form>
 
-    <script>
-        // โหลดหัวข้อเมื่อหน้าเว็บโหลดเสร็จ
-    document.addEventListener('DOMContentLoaded', function() {
-        loadAllTopics();
-    });
-
-    function loadAllTopics() {
-    fetch('../php/get_topics.php')
-        .then(response => response.json())
-        .then(topics => {
-            populateDropdown('primary-topic', topics.primary);
-            populateDropdown('secondary-topic', topics.secondary);
-            populateDropdown('tertiary-topic', topics.tertiary);
-            populateDropdown('quaternary-topic', topics.quaternary);
-        })
-        .catch(error => console.error('Error loading topics:', error));
-}
-
-function populateDropdown(id, topics) {
-    const select = document.getElementById(id);
-    select.innerHTML = '<option value="">เลือกหัวข้อ</option>';
-    topics.forEach(topic => {
-        const option = document.createElement('option');
-        option.value = topic;
-        option.textContent = topic;
-        select.appendChild(option);
-    });
-}
-
-
-function toggleInput(baseId) {
-    const select = document.getElementById(baseId);
-    const input = document.getElementById(`${baseId}-input`);
-    const button = select.parentElement.querySelector('.toggle-input');
-
-    if (select.style.display !== 'none') {
-        select.style.display = 'none';
-        input.style.display = 'block';
-        button.textContent = 'เลือกจากรายการ';
-        input.required = true;
-        select.required = false;
-    } else {
-        select.style.display = 'block';
-        input.style.display = 'none';
-        button.textContent = 'กรอกชื่อหัวข้อ';
-        select.required = true;
-        input.required = false;
-    }
-}
-
-
-    function getTopicValue(baseId) {
-    const select = document.getElementById(baseId);
-    const input = document.getElementById(`${baseId}-input`);
-    return select.style.display === 'none' ? input.value.trim() : select.value.trim();
-}
-
-
-        </script>
-    
-      
-    </form>
-    
-    
     <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
     <button id="save-button">บันทึก</button>
     <p id="status"></p>
@@ -150,16 +79,14 @@ function toggleInput(baseId) {
             statusElement.style.color = 'blue';
         }
 
-        // Initialize Unlayer editor
         unlayer.init({
             id: 'editor-container',
             projectId: 0,
             displayMode: 'email'
         });
 
-        // โหลดข้อมูลจาก API เมื่อมี id
         if (id) {
-            fetch(`../php/get-content.php?id=${id}`)
+            fetch(`./get-content.php?id=${id}`)
                 .then(response => {
                     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     return response.json();
@@ -168,16 +95,14 @@ function toggleInput(baseId) {
                     if (data.success) {
                         try {
                             if (data.design) {
-                                unlayer.loadDesign(data.design); // โหลด design object
+                                unlayer.loadDesign(data.design); 
                             } else if (data.content) {
-                                unlayer.setHTML(data.content); // โหลด HTML string
+                                unlayer.setHTML(data.content);
                             } else {
                                 throw new Error("ไม่มีข้อมูลที่สามารถโหลดได้");
                             }
 
-                            // อัปเดตค่าฟิลด์
                             document.getElementById("name").value = data.name || "";
-                            document.getElementById("title").value = data.title || "";
                             document.getElementById("project_id").value = data.project_id || "";
                             document.getElementById("category_id").value = data.category_id || "";
                             document.getElementById("primary-topic").value = data.primary_topic || "";
@@ -202,13 +127,11 @@ function toggleInput(baseId) {
                 });
         }
 
-        // บันทึกเนื้อหา
         function saveContent() {
             statusElement.textContent = 'กำลังบันทึก...';
             statusElement.style.color = 'blue';
 
             const name = document.getElementById('name').value;
-            const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
             const primaryTopic = document.getElementById('primary-topic').value.trim();
@@ -216,8 +139,7 @@ function toggleInput(baseId) {
             const tertiaryTopic = document.getElementById('tertiary-topic').value.trim();
             const quaternaryTopic = document.getElementById('quaternary-topic').value.trim();
 
-            // ตรวจสอบค่าฟิลด์ที่จำเป็น
-            if (!name ||!mainTopic ||isNaN(projectId) || isNaN(categoryId)) {
+            if (!name || !primaryTopic || isNaN(projectId) || isNaN(categoryId)) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
                 statusElement.style.color = 'red';
                 return;
@@ -229,7 +151,6 @@ function toggleInput(baseId) {
                     const postData = {
                         id: id || null,
                         name,
-                        title: title || null,
                         content: htmlContent,
                         design: JSON.stringify(design),
                         project_id: projectId,
@@ -242,7 +163,7 @@ function toggleInput(baseId) {
 
                     console.log("Sending data:", postData);
 
-                    fetch('../php/save-content.php', {
+                    fetch('./save-content.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(postData)
@@ -254,7 +175,6 @@ function toggleInput(baseId) {
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
 
-                            window.location.href = `./view-content.html?id=${result.id}`;
                         } else {
                             statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
                             statusElement.style.color = 'red';

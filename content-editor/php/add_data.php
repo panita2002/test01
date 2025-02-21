@@ -1,6 +1,10 @@
 <?php
 session_start();
 if (!isset($_SESSION['id'])) {
+    header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+    header("Cache-Control: post-check=0, pre-check=0", false);
+    header("Pragma: no-cache");
+
     header("Location: ../../login/html/login.html");
     exit();
 }
@@ -9,28 +13,41 @@ if (!isset($_SESSION['id'])) {
 <!DOCTYPE html>
 <html lang="th">
 <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เพิ่มเนื้อหาใหม่</title>
     <link rel="stylesheet" href="../css/editor.css">
+    
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- ✅ โหลด jQuery UI ที่จำเป็นสำหรับ Autocomplete -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    
     <script src="https://editor.unlayer.com/embed.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
 </head>
+
 <body>
 
 <?php include('../../category/php/header.php'); ?>
 
+<h1 style="margin-top: 120px; font-size: 30px;">Add Data</h1>
+<div class="breadcrumbs-container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="padding-left: 20px;">
+            <li class="breadcrumb-item"><a href="../../category/php/index.php">หน้าหลัก</a></li>
+            <li class="breadcrumb-item active" aria-current="page">เพิ่มเนื้อหาใหม่</li>
+        </ol>
+    </nav>
+</div>
 
-    <h1 style="margin-top: 120px; font-size: 30px;">เพิ่มเนื้อหาใหม่</h1>
-
-    <form id="content-form">
+<form id="content-form">
         <div class="name-title-group form-group">
             <label for="name">Name:<span class="required">*</span></label>
             <input type="text" id="name" name="name" required>
-            
-            <label for="title">Title:</label>
-            <input type="text" id="title" name="title">
         </div>
 
         <div class="project-category-group form-group">
@@ -43,18 +60,18 @@ if (!isset($_SESSION['id'])) {
 
         <div class="topic-group">
             <label for="primary-topic">Primary Topic:<span class="required">*</span></label>
-            <input type="text" id="primary-topic" name="primary-topic" required>
+            <input type="text" id="primary-topic" name="primary-topic" class="autocomplete-field" required>
             
             <label for="secondary-topic">Secondary Topic:</label>
-            <input type="text" id="secondary-topic" name="secondary-topic">
+            <input type="text" id="secondary-topic" name="secondary-topic" class="autocomplete-field">
         </div>
         
         <div class="subsub-order-group">
             <label for="tertiary-topic">Tertiary Topic:</label>
-            <input type="text" id="tertiary-topic" name="tertiary-topic">
+            <input type="text" id="tertiary-topic" name="tertiary-topic" class="autocomplete-field">
             
             <label for="quaternary-topic">Quaternary Topic:</label>
-            <input type="text" id="quaternary-topic" name="quaternary-topic">
+            <input type="text" id="quaternary-topic" name="quaternary-topic" class="autocomplete-field">
         </div>
     </form>
 
@@ -79,12 +96,139 @@ if (!isset($_SESSION['id'])) {
         statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
         statusElement.style.color = 'blue';
 
+        // ฟังก์ชันสำหรับ autocomplete
+        $(document).ready(function() {
+            // Primary Topic Autocomplete
+            $("#primary-topic").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "./get-topics.php",
+                        dataType: "json",
+                        data: {
+                            term: request.term,
+                            type: "primary"
+                        },
+                        success: function(data) {
+                            response(data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("Error fetching topics:", error);
+                            response([]);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    const selectedPrimary = ui.item.value;
+                    
+                    // เมื่อเลือกหัวข้อหลักแล้ว โหลดหัวข้อรองที่เกี่ยวข้อง
+                    $("#secondary-topic").autocomplete("option", "source", function(request, response) {
+                        $.ajax({
+                            url: "./get-topics.php",
+                            dataType: "json",
+                            data: {
+                                term: request.term,
+                                type: "secondary",
+                                primary: selectedPrimary
+                            },
+                            success: function(data) {
+                                response(data);
+                            },
+                            error: function() {
+                                response([]);
+                            }
+                        });
+                    });
+                }
+            });
+
+            // Secondary Topic
+            $("#secondary-topic").autocomplete({
+                source: function(request, response) {
+                    const primaryTopic = $("#primary-topic").val();
+                    
+                    $.ajax({
+                        url: "./get-topics.php",
+                        dataType: "json",
+                        data: {
+                            term: request.term,
+                            type: "secondary",
+                            primary: primaryTopic
+                        },
+                        success: function(data) {
+                            response(data);
+                        },
+                        error: function() {
+                            response([]);
+                        }
+                    });
+                },
+                minLength: 1,
+                select: function(event, ui) {
+                    // อาจมีการโหลดข้อมูล tertiary ที่เกี่ยวข้อง
+                }
+            });
+
+            // Tertiary Topic
+            $("#tertiary-topic").autocomplete({
+                source: function(request, response) {
+                    const primaryTopic = $("#primary-topic").val();
+                    const secondaryTopic = $("#secondary-topic").val();
+                    
+                    $.ajax({
+                        url: "./get-topics.php",
+                        dataType: "json",
+                        data: {
+                            term: request.term,
+                            type: "tertiary",
+                            primary: primaryTopic,
+                            secondary: secondaryTopic
+                        },
+                        success: function(data) {
+                            response(data);
+                        },
+                        error: function() {
+                            response([]);
+                        }
+                    });
+                },
+                minLength: 1
+            });
+
+            // Quaternary Topic
+            $("#quaternary-topic").autocomplete({
+                source: function(request, response) {
+                    const primaryTopic = $("#primary-topic").val();
+                    const secondaryTopic = $("#secondary-topic").val();
+                    const tertiaryTopic = $("#tertiary-topic").val();
+                    
+                    $.ajax({
+                        url: "./get-topics.php",
+                        dataType: "json",
+                        data: {
+                            term: request.term,
+                            type: "quaternary",
+                            primary: primaryTopic,
+                            secondary: secondaryTopic,
+                            tertiary: tertiaryTopic
+                        },
+                        success: function(data) {
+                            response(data);
+                        },
+                        error: function() {
+                            response([]);
+                        }
+                    });
+                },
+                minLength: 1
+            });
+        });
+
         function saveContent() {
             statusElement.textContent = 'กำลังบันทึก...';
             statusElement.style.color = 'blue';
 
             const name = document.getElementById('name').value;
-            const title = document.getElementById('title').value;
             const projectId = parseInt(document.getElementById('project_id').value, 10);
             const categoryId = parseInt(document.getElementById('category_id').value, 10);
             const primaryTopic = document.getElementById('primary-topic').value.trim();
@@ -105,7 +249,6 @@ if (!isset($_SESSION['id'])) {
                     const postData = {
                         id: null, 
                         name,
-                        title: title || null,
                         content: htmlContent,
                         design: JSON.stringify(design),
                         project_id: projectId,
@@ -126,9 +269,7 @@ if (!isset($_SESSION['id'])) {
                         if (result.success) {
                             statusElement.textContent = 'บันทึกสำเร็จ!';
                             statusElement.style.color = 'green';
-                            setTimeout(() => {
-                                window.location.href = `../html/view-content.html?id=${result.id}`;
-                            }, 1000);
+                            
                         } else {
                             statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
                             statusElement.style.color = 'red';

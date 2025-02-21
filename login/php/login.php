@@ -6,30 +6,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = trim($_POST["username"]);
     $password = trim($_POST["password"]);
 
-    $sql = "SELECT id, email, password FROM users WHERE username = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $stmt->store_result();
-    
-    if ($stmt->num_rows > 0) {
-        $stmt->bind_result($id, $email, $hashed_password);
-        $stmt->fetch();
-        
-        if (password_verify($password, $hashed_password)) {
-            $_SESSION["id"] = $id;
-            $_SESSION["username"] = $username;
-            
-            header("Location: /test01/category/php/index.php");
-            exit();
-        } else {
-            echo "Invalid password!";
-        }
-    } else {
-        echo "User not found!";
+    if (empty($username) || empty($password)) {
+        $_SESSION["error"] = "กรุณากรอกชื่อผู้ใช้และรหัสผ่าน!";
+        header("Location: ../../login/html/login.html");
+        exit();
     }
 
-    $stmt->close();
-    $conn->close();
+    try {
+        $sql = "SELECT id, email, password FROM users WHERE username = :username";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindValue(":username", $username, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        if ($stmt->rowCount() > 0) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (password_verify($password, $user["password"])) {
+                session_regenerate_id(true);
+
+                $_SESSION["id"] = $user["id"];
+                $_SESSION["username"] = $username;
+
+                header("Location: /test01/category/php/index.php");
+                exit();
+            }
+        }
+        
+        $_SESSION["error"] = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!";
+        header("Location: ../../login/html/login.html");
+        exit();
+
+    } catch (PDOException $e) {
+        error_log("Database error: " . $e->getMessage());
+        $_SESSION["error"] = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง!";
+        header("Location: ../../login/html/login.html");
+        exit();
+    }
 }
+
 ?>

@@ -1,5 +1,5 @@
 <?php
-
+// save-content.php
 header('Content-Type: application/json; charset=utf-8');
 
 $servername = "localhost";
@@ -15,22 +15,23 @@ if ($conn->connect_error) {
     exit;
 }
 
+// รับ JSON ที่ถูกส่งเข้ามา
 $data = json_decode(file_get_contents('php://input'), true);
 
-
+// ตรวจสอบข้อมูลที่จำเป็น
 $id = isset($data['id']) && is_numeric($data['id']) ? intval($data['id']) : null;
 $name = isset($data['name']) ? trim($data['name']) : '';
-$title = isset($data['title']) && $data['title'] !== '' ? trim($data['title']) : null;
 $content = isset($data['content']) ? trim($data['content']) : '';
 $design = isset($data['design']) ? trim($data['design']) : '';
 $project_id = isset($data['project_id']) && is_numeric($data['project_id']) ? intval($data['project_id']) : 0;
 $category_id = isset($data['category_id']) && is_numeric($data['category_id']) ? intval($data['category_id']) : 0;
-$primary_topic = isset($data['primary_topic']) && $data['primary_topic'] !== '' ? trim($data['primary_topic']) : '';
-$secondary_topic = isset($data['secondary_topic']) && $data['secondary_topic'] !== '' ? trim($data['secondary_topic']) : null;
-$tertiary_topic = isset($data['tertiary_topic']) && $data['tertiary_topic'] !== '' ? trim($data['tertiary_topic']) : null;
-$quaternary_topic = isset($data['quaternary_topic']) && $data['quaternary_topic'] !== '' ? trim($data['quaternary_topic']) : null;
 
-if (empty($name) || empty($primary_topic) ||empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0) {
+$primary_topic = !empty($data['primary_topic']) ? trim($data['primary_topic']) : null;
+$secondary_topic = !empty($data['secondary_topic']) ? trim($data['secondary_topic']) : null;
+$tertiary_topic = !empty($data['tertiary_topic']) ? trim($data['tertiary_topic']) : null;
+$quaternary_topic = !empty($data['quaternary_topic']) ? trim($data['quaternary_topic']) : null;
+
+if (empty($name) || empty($content) || empty($design) || $project_id <= 0 || $category_id <= 0) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Invalid input. Please check the required fields.']);
     exit;
@@ -38,16 +39,16 @@ if (empty($name) || empty($primary_topic) ||empty($content) || empty($design) ||
 
 try {
     if ($id) {
+        // UPDATE ข้อมูล
         $sql = "UPDATE editor_content 
-                SET name = ?, title = ?, content = ?, design = ?, project_id = ?, category_id = ?, 
+                SET name = ?, content = ?, design = ?, project_id = ?, category_id = ?, 
                     primary_topic = ?, secondary_topic = ?, tertiary_topic = ?, quaternary_topic = ?, 
-                    updated_at = CURDATE(), update_time = CURTIME() 
+                    updated_at = NOW() 
                 WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssiissssi", 
+            "sssiissssi", 
             $name,
-            $title,
             $content,
             $design,
             $project_id,
@@ -59,13 +60,16 @@ try {
             $id
         );
     } else {
-        $sql = "INSERT INTO editor_content (name, title, content, design, project_id, category_id, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, created_at, created_time) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURDATE(), CURTIME())";
+        // INSERT ข้อมูล
+        $sql = "INSERT INTO editor_content 
+                (name, content, design, project_id, category_id, 
+                 primary_topic, secondary_topic, tertiary_topic, quaternary_topic, 
+                 created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param(
-            "ssssiissss", 
+            "sssiissss", 
             $name,
-            $title,
             $content,
             $design,
             $project_id,
@@ -79,6 +83,7 @@ try {
 
     if ($stmt->execute()) {
         $responseId = $id ?? $conn->insert_id;
+        http_response_code($id ? 200 : 201);  // **200 = UPDATE, 201 = INSERT**
         echo json_encode(['success' => true, 'message' => 'Content saved successfully.', 'id' => $responseId]);
     } else {
         throw new Exception('Failed to execute statement: ' . $stmt->error);

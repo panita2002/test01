@@ -32,7 +32,6 @@ if ($id) {
             'success' => true,
             'id' => $row['id'],
             'name' => $row['name'],
-            'title' => $row['title'],
             'project_id' => $row['project_id'],
             'category_id' => $row['category_id'],
             'content' => $row['content'],

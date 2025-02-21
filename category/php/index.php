@@ -13,7 +13,7 @@
 <?php include('../php/header.php'); ?>
 <?php include('../php/sidebar.php'); ?>
 <?php include('../php/content.php'); ?>
-
+<?php include '../php/breadcrumbs.php'; ?>
 
 </body>
 </html>

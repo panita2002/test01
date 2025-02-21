@@ -1,0 +1,14 @@
+.breadcrumb {
+    list-style: none;
+    display: flex;
+}
+.breadcrumb-item {
+    margin-right: 10px;
+}
+.breadcrumb-item a {
+    text-decoration: none;
+    color: blue;
+}
+.breadcrumb-item.active {
+    font-weight: bold;
+}
