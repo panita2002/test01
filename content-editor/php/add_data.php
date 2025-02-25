@@ -1,6 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['id'])) {
+    session_write_close();
     header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
     header("Cache-Control: post-check=0, pre-check=0", false);
     header("Pragma: no-cache");
@@ -13,23 +14,16 @@ if (!isset($_SESSION['id'])) {
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เพิ่มเนื้อหาใหม่</title>
     <link rel="stylesheet" href="../css/editor.css">
-    
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <!-- ✅ โหลด jQuery UI ที่จำเป็นสำหรับ Autocomplete -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-    
     <script src="https://editor.unlayer.com/embed.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
 
 <?php include('../../category/php/header.php'); ?>
@@ -96,9 +90,7 @@ if (!isset($_SESSION['id'])) {
         statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
         statusElement.style.color = 'blue';
 
-        // ฟังก์ชันสำหรับ autocomplete
         $(document).ready(function() {
-            // Primary Topic Autocomplete
             $("#primary-topic").autocomplete({
                 source: function(request, response) {
                     $.ajax({
@@ -121,7 +113,6 @@ if (!isset($_SESSION['id'])) {
                 select: function(event, ui) {
                     const selectedPrimary = ui.item.value;
                     
-                    // เมื่อเลือกหัวข้อหลักแล้ว โหลดหัวข้อรองที่เกี่ยวข้อง
                     $("#secondary-topic").autocomplete("option", "source", function(request, response) {
                         $.ajax({
                             url: "./get-topics.php",
@@ -142,7 +133,6 @@ if (!isset($_SESSION['id'])) {
                 }
             });
 
-            // Secondary Topic
             $("#secondary-topic").autocomplete({
                 source: function(request, response) {
                     const primaryTopic = $("#primary-topic").val();
@@ -165,11 +155,9 @@ if (!isset($_SESSION['id'])) {
                 },
                 minLength: 1,
                 select: function(event, ui) {
-                    // อาจมีการโหลดข้อมูล tertiary ที่เกี่ยวข้อง
                 }
             });
 
-            // Tertiary Topic
             $("#tertiary-topic").autocomplete({
                 source: function(request, response) {
                     const primaryTopic = $("#primary-topic").val();
@@ -195,7 +183,6 @@ if (!isset($_SESSION['id'])) {
                 minLength: 1
             });
 
-            // Quaternary Topic
             $("#quaternary-topic").autocomplete({
                 source: function(request, response) {
                     const primaryTopic = $("#primary-topic").val();

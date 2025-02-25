@@ -1,5 +1,4 @@
 <?php
-// save-content.php
 header('Content-Type: application/json; charset=utf-8');
 
 $servername = "localhost";
@@ -15,10 +14,8 @@ if ($conn->connect_error) {
     exit;
 }
 
-// รับ JSON ที่ถูกส่งเข้ามา
 $data = json_decode(file_get_contents('php://input'), true);
 
-// ตรวจสอบข้อมูลที่จำเป็น
 $id = isset($data['id']) && is_numeric($data['id']) ? intval($data['id']) : null;
 $name = isset($data['name']) ? trim($data['name']) : '';
 $content = isset($data['content']) ? trim($data['content']) : '';
@@ -39,7 +36,6 @@ if (empty($name) || empty($content) || empty($design) || $project_id <= 0 || $ca
 
 try {
     if ($id) {
-        // UPDATE ข้อมูล
         $sql = "UPDATE editor_content 
                 SET name = ?, content = ?, design = ?, project_id = ?, category_id = ?, 
                     primary_topic = ?, secondary_topic = ?, tertiary_topic = ?, quaternary_topic = ?, 
@@ -60,7 +56,6 @@ try {
             $id
         );
     } else {
-        // INSERT ข้อมูล
         $sql = "INSERT INTO editor_content 
                 (name, content, design, project_id, category_id, 
                  primary_topic, secondary_topic, tertiary_topic, quaternary_topic, 

@@ -105,14 +105,11 @@
     const queryParams = new URLSearchParams(window.location.search);
     queryParams.set('id', id);
     
-    // Update URL without reloading the page
     window.history.pushState({}, '', `${window.location.pathname}?${queryParams.toString()}`);
     
-    // โหลดเนื้อหา
     fetch(`./get-content.php?id=${id}`)
         .then(response => response.json())
         .then(data => {
-            // โหลด breadcrumbs ก่อน
             fetch(`./breadcrumbs.php?id=${id}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -122,29 +119,23 @@
                 .then(breadcrumbsData => {
                     const contentArea = document.getElementById('content-area');
                     
-                    // สร้าง breadcrumb HTML
                     let breadcrumbsHtml = '<nav aria-label="breadcrumb"><ol class="breadcrumb">';
                     breadcrumbsData.forEach((item, index) => {
                         if (index === 0) {
-                            // เฉพาะ Home ที่คลิกได้
                             breadcrumbsHtml += `<li class="breadcrumb-item"><a href="${item.url}">${item.title}</a></li>`;
                         } else if (index < breadcrumbsData.length - 1) {
-                            // รายการตรงกลางไม่สามารถคลิกได้
                             breadcrumbsHtml += `<li class="breadcrumb-item"><span>${item.title}</span></li>`;
                         } else {
-                            // รายการสุดท้าย (active)
                             breadcrumbsHtml += `<li class="breadcrumb-item active" aria-current="page">${item.title}</li>`;
                         }
                     });
                     breadcrumbsHtml += '</ol></nav>';
                     
-                    // แสดงเนื้อหา
                     const contentHtml = data.content;
                     contentArea.innerHTML = breadcrumbsHtml + contentHtml;
                 })
                 .catch(error => {
                     console.error('Breadcrumbs Error:', error);
-                    // ถ้าโหลด breadcrumbs ไม่สำเร็จ ก็ยังแสดงเนื้อหาต่อไป
                     document.getElementById('content-area').innerHTML = data.content;
                 });
         })

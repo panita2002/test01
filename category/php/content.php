@@ -1,7 +1,6 @@
 <body>
 <div class="content-area" id="content-area">
     <?php 
-    // โหลด breadcrumbs เพียงครั้งเดียว
     if (!isset($_GET['id'])) {
         include '../php/breadcrumbs.php';
     }
@@ -10,7 +9,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/content.css">
     
-    <!-- ไม่ต้องใส่ breadcrumb ซ้ำซ้อนอีก เพราะ breadcrumbs.php จะสร้างให้แล้ว -->
 
 <div class="content-box">
     <div class="container-custom">

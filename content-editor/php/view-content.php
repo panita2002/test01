@@ -70,7 +70,6 @@ if (!isset($_SESSION['id'])) {
             });
         }
 
-        // อัพเดต breadcrumbs ด้วยชื่อเนื้อหา
 if (id) {
     fetch(`./get-content.php?id=${id}`)
         .then(response => response.json())
