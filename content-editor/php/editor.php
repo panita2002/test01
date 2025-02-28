@@ -39,30 +39,23 @@ if (!isset($_SESSION['id'])) {
             <input type="text" id="name" name="name" required>
         </div>
 
-        <div class="project-category-group form-group">
-            <label for="project_id">Project ID:<span class="required">*</span></label>
-            <input type="number" id="project_id" name="project_id" required>
-
-            <label for="category_id">Category ID:<span class="required">*</span></label>
-            <input type="number" id="category_id" name="category_id" required>
-        </div>
-
         <div class="topic-group">
             <label for="primary-topic">Primary Topic:<span class="required">*</span></label>
             <input type="text" id="primary-topic" name="primary-topic" required>
-            
+
             <label for="secondary-topic">Secondary Topic:</label>
             <input type="text" id="secondary-topic" name="secondary-topic">
         </div>
-        
+
         <div class="subsub-order-group">
             <label for="tertiary-topic">Tertiary Topic:</label>
             <input type="text" id="tertiary-topic" name="tertiary-topic">
-            
+
             <label for="quaternary-topic">Quaternary Topic:</label>
             <input type="text" id="quaternary-topic" name="quaternary-topic">
         </div>
     </form>
+
 
     <div id="editor-container" style="height: 500px; border: 1px solid #ccc;"></div>
     <button id="save-button">บันทึก</button>
@@ -103,8 +96,6 @@ if (!isset($_SESSION['id'])) {
                             }
 
                             document.getElementById("name").value = data.name || "";
-                            document.getElementById("project_id").value = data.project_id || "";
-                            document.getElementById("category_id").value = data.category_id || "";
                             document.getElementById("primary-topic").value = data.primary_topic || "";
                             document.getElementById("secondary-topic").value = data.secondary_topic || "";
                             document.getElementById("tertiary-topic").value = data.tertiary_topic || "";
@@ -132,14 +123,12 @@ if (!isset($_SESSION['id'])) {
             statusElement.style.color = 'blue';
 
             const name = document.getElementById('name').value;
-            const projectId = parseInt(document.getElementById('project_id').value, 10);
-            const categoryId = parseInt(document.getElementById('category_id').value, 10);
             const primaryTopic = document.getElementById('primary-topic').value.trim();
             const secondaryTopic = document.getElementById('secondary-topic').value.trim();
             const tertiaryTopic = document.getElementById('tertiary-topic').value.trim();
             const quaternaryTopic = document.getElementById('quaternary-topic').value.trim();
 
-            if (!name || !primaryTopic || isNaN(projectId) || isNaN(categoryId)) {
+            if (!name || !primaryTopic ) {
                 statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น';
                 statusElement.style.color = 'red';
                 return;
@@ -153,8 +142,6 @@ if (!isset($_SESSION['id'])) {
                         name,
                         content: htmlContent,
                         design: JSON.stringify(design),
-                        project_id: projectId,
-                        category_id: categoryId,
                         primary_topic: primaryTopic || null,
                         secondary_topic: secondaryTopic || null,
                         tertiary_topic: tertiaryTopic || null,
@@ -189,7 +176,13 @@ if (!isset($_SESSION['id'])) {
             });
         }
 
-        document.getElementById('save-button').addEventListener('click', saveContent);
+        document.getElementById('save-button').addEventListener('click', function(event) {
+        if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการบันทึกเนื้อหานี้?")) {
+            event.preventDefault();
+            return;
+        }
+        saveContent();
+    });
     </script>
 </body>
 </html>

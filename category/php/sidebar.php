@@ -13,7 +13,7 @@
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT id, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, content FROM editor_content ORDER BY category_id";
+    $sql = "SELECT id, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, content FROM editor_content ORDER BY id";
     $result = $conn->query($sql);
 
     $topics = [];

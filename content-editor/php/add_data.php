@@ -1,7 +1,6 @@
 <?php
 session_start();
 if (!isset($_SESSION['id'])) {
-    session_write_close();
     header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
     header("Cache-Control: post-check=0, pre-check=0", false);
     header("Pragma: no-cache");
@@ -9,6 +8,7 @@ if (!isset($_SESSION['id'])) {
     header("Location: ../../login/html/login.html");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -39,139 +39,58 @@ if (!isset($_SESSION['id'])) {
 </div>
 
 <form id="content-form">
-        <div class="name-title-group form-group">
-            <label for="name">Name:<span class="required">*</span></label>
-            <input type="text" id="name" name="name" required>
-        </div>
+    <div class="name-title-group form-group">
+        <label for="name">Name:<span class="required">*</span></label>
+        <input type="text" id="name" name="name" required>
+    </div>
 
-        <div class="project-category-group form-group">
-            <label for="project_id">Project ID:<span class="required">*</span></label>
-            <input type="number" id="project_id" name="project_id" required>
-
-            <label for="category_id">Category ID:<span class="required">*</span></label>
-            <input type="number" id="category_id" name="category_id" required>
-        </div>
-
-        <div class="topic-group">
-            <label for="primary-topic">Primary Topic:<span class="required">*</span></label>
-            <input type="text" id="primary-topic" name="primary-topic" class="autocomplete-field" required>
-            
-            <label for="secondary-topic">Secondary Topic:</label>
-            <input type="text" id="secondary-topic" name="secondary-topic" class="autocomplete-field">
-        </div>
         
-        <div class="subsub-order-group">
-            <label for="tertiary-topic">Tertiary Topic:</label>
-            <input type="text" id="tertiary-topic" name="tertiary-topic" class="autocomplete-field">
-            
-            <label for="quaternary-topic">Quaternary Topic:</label>
-            <input type="text" id="quaternary-topic" name="quaternary-topic" class="autocomplete-field">
-        </div>
-    </form>
 
-    <div id="editor-container" style="height: 500px; border: 1px solid #ccc; margin: 20px 0;"></div>
-    
-    <div class="button-group">
-        <button id="save-button" class="primary-button">บันทึก</button>
+    <div class="topic-group">
+        <label for="primary-topic">Primary Topic:<span class="required">*</span></label>
+        <input type="text" id="primary-topic" name="primary-topic" class="autocomplete-field" required>
         
+        <label for="secondary-topic">Secondary Topic:</label>
+        <input type="text" id="secondary-topic" name="secondary-topic" class="autocomplete-field">
     </div>
     
-    <p id="status"></p>
+    <div class="subsub-order-group">
+        <label for="tertiary-topic">Tertiary Topic:</label>
+        <input type="text" id="tertiary-topic" name="tertiary-topic" class="autocomplete-field">
+        
+        <label for="quaternary-topic">Quaternary Topic:</label>
+        <input type="text" id="quaternary-topic" name="quaternary-topic" class="autocomplete-field">
+    </div>
+</form>
 
-    <script>
-        const statusElement = document.getElementById('status');
+<div id="editor-container" style="height: 500px; border: 1px solid #ccc; margin: 20px 0;"></div>
 
-        unlayer.init({
-            id: 'editor-container',
-            projectId: 0,
-            displayMode: 'email'
-        });
+<div class="button-group">
+    <button id="save-button" class="primary-button">บันทึก</button>
+</div>
 
-        statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
-        statusElement.style.color = 'blue';
+<p id="status"></p>
 
-        $(document).ready(function() {
-            $("#primary-topic").autocomplete({
+<script>
+    const statusElement = document.getElementById('status');
+    
+    unlayer.init({
+        id: 'editor-container',
+        projectId: 0,
+        displayMode: 'email'
+    });
+
+    statusElement.textContent = 'กรุณากรอกข้อมูลเพื่อสร้างเนื้อหาใหม่';
+    statusElement.style.color = 'blue';
+
+    
+        function setupAutocomplete(selector, type, extraData = {}) {
+            $(selector).autocomplete({
                 source: function(request, response) {
                     $.ajax({
                         url: "./get-topics.php",
                         dataType: "json",
-                        data: {
-                            term: request.term,
-                            type: "primary"
-                        },
-                        success: function(data) {
-                            response(data);
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("Error fetching topics:", error);
-                            response([]);
-                        }
-                    });
-                },
-                minLength: 1,
-                select: function(event, ui) {
-                    const selectedPrimary = ui.item.value;
-                    
-                    $("#secondary-topic").autocomplete("option", "source", function(request, response) {
-                        $.ajax({
-                            url: "./get-topics.php",
-                            dataType: "json",
-                            data: {
-                                term: request.term,
-                                type: "secondary",
-                                primary: selectedPrimary
-                            },
-                            success: function(data) {
-                                response(data);
-                            },
-                            error: function() {
-                                response([]);
-                            }
-                        });
-                    });
-                }
-            });
-
-            $("#secondary-topic").autocomplete({
-                source: function(request, response) {
-                    const primaryTopic = $("#primary-topic").val();
-                    
-                    $.ajax({
-                        url: "./get-topics.php",
-                        dataType: "json",
-                        data: {
-                            term: request.term,
-                            type: "secondary",
-                            primary: primaryTopic
-                        },
-                        success: function(data) {
-                            response(data);
-                        },
-                        error: function() {
-                            response([]);
-                        }
-                    });
-                },
-                minLength: 1,
-                select: function(event, ui) {
-                }
-            });
-
-            $("#tertiary-topic").autocomplete({
-                source: function(request, response) {
-                    const primaryTopic = $("#primary-topic").val();
-                    const secondaryTopic = $("#secondary-topic").val();
-                    
-                    $.ajax({
-                        url: "./get-topics.php",
-                        dataType: "json",
-                        data: {
-                            term: request.term,
-                            type: "tertiary",
-                            primary: primaryTopic,
-                            secondary: secondaryTopic
-                        },
+                        data: { term: request.term, type: type, ...extraData },
                         success: function(data) {
                             response(data);
                         },
@@ -181,97 +100,79 @@ if (!isset($_SESSION['id'])) {
                     });
                 },
                 minLength: 1
-            });
-
-            $("#quaternary-topic").autocomplete({
-                source: function(request, response) {
-                    const primaryTopic = $("#primary-topic").val();
-                    const secondaryTopic = $("#secondary-topic").val();
-                    const tertiaryTopic = $("#tertiary-topic").val();
-                    
-                    $.ajax({
-                        url: "./get-topics.php",
-                        dataType: "json",
-                        data: {
-                            term: request.term,
-                            type: "quaternary",
-                            primary: primaryTopic,
-                            secondary: secondaryTopic,
-                            tertiary: tertiaryTopic
-                        },
-                        success: function(data) {
-                            response(data);
-                        },
-                        error: function() {
-                            response([]);
-                        }
-                    });
-                },
-                minLength: 1
-            });
-        });
-
-        function saveContent() {
-            statusElement.textContent = 'กำลังบันทึก...';
-            statusElement.style.color = 'blue';
-
-            const name = document.getElementById('name').value;
-            const projectId = parseInt(document.getElementById('project_id').value, 10);
-            const categoryId = parseInt(document.getElementById('category_id').value, 10);
-            const primaryTopic = document.getElementById('primary-topic').value.trim();
-            const secondaryTopic = document.getElementById('secondary-topic').value.trim();
-            const tertiaryTopic = document.getElementById('tertiary-topic').value.trim();
-            const quaternaryTopic = document.getElementById('quaternary-topic').value.trim();
-
-            
-            if (!name || !primaryTopic || isNaN(projectId) || isNaN(categoryId)) {
-                statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น (ช่องที่มีเครื่องหมาย *)';
-                statusElement.style.color = 'red';
-                return;
-            }
-
-            unlayer.exportHtml((data) => {
-                const htmlContent = data.html;
-                unlayer.saveDesign((design) => {
-                    const postData = {
-                        id: null, 
-                        name,
-                        content: htmlContent,
-                        design: JSON.stringify(design),
-                        project_id: projectId,
-                        category_id: categoryId,
-                        primary_topic: primaryTopic || null,
-                        secondary_topic: secondaryTopic || null,
-                        tertiary_topic: tertiaryTopic || null,
-                        quaternary_topic: quaternaryTopic || null,
-                    };
-
-                    fetch('./save-content.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(postData)
-                    })
-                    .then(response => response.json())
-                    .then(result => {
-                        if (result.success) {
-                            statusElement.textContent = 'บันทึกสำเร็จ!';
-                            statusElement.style.color = 'green';
-                            
-                        } else {
-                            statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
-                            statusElement.style.color = 'red';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error saving content:', error);
-                        statusElement.textContent = 'เกิดข้อผิดพลาดในการบันทึก';
-                        statusElement.style.color = 'red';
-                    });
-                });
             });
         }
 
-        document.getElementById('save-button').addEventListener('click', saveContent);
-    </script>
+        setupAutocomplete("#primary-topic", "primary");
+        setupAutocomplete("#secondary-topic", "secondary", { primary: $("#primary-topic").val() });
+        setupAutocomplete("#tertiary-topic", "tertiary", { primary: $("#primary-topic").val(), secondary: $("#secondary-topic").val() });
+        setupAutocomplete("#quaternary-topic", "quaternary", { primary: $("#primary-topic").val(), secondary: $("#secondary-topic").val(), tertiary: $("#tertiary-topic").val() });
+
+
+    document.getElementById('save-button').addEventListener('click', function(event) {
+        if (!confirm("คุณแน่ใจหรือไม่ว่าต้องการบันทึกเนื้อหานี้?")) {
+            event.preventDefault();
+            return;
+        }
+        saveContent();
+    });
+
+    function saveContent() {
+        statusElement.textContent = 'กำลังบันทึก...';
+        statusElement.style.color = 'blue';
+
+        const name = document.getElementById('name').value;
+        const primaryTopic = document.getElementById('primary-topic').value.trim();
+        const secondaryTopic = document.getElementById('secondary-topic').value.trim();
+        const tertiaryTopic = document.getElementById('tertiary-topic').value.trim();
+        const quaternaryTopic = document.getElementById('quaternary-topic').value.trim();
+
+        if (!name || !primaryTopic) {
+            statusElement.textContent = 'กรุณากรอกข้อมูลให้ครบถ้วนในส่วนที่จำเป็น (ช่องที่มีเครื่องหมาย *)';
+            statusElement.style.color = 'red';
+            return;
+        }
+
+        unlayer.exportHtml((data) => {
+            const htmlContent = data.html;
+            unlayer.saveDesign((design) => {
+                const postData = {
+                    id: null, 
+                    name,
+                    content: htmlContent,
+                    design: JSON.stringify(design),
+                    primary_topic: primaryTopic || null,
+                    secondary_topic: secondaryTopic || null,
+                    tertiary_topic: tertiaryTopic || null,
+                    quaternary_topic: quaternaryTopic || null,
+                };
+
+                fetch('./save-content.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(postData)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        statusElement.textContent = 'บันทึกสำเร็จ!';
+                        statusElement.style.color = 'green';
+                        
+                    } else {
+                        statusElement.textContent = `เกิดข้อผิดพลาด: ${result.message}`;
+                        statusElement.style.color = 'red';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error saving content:', error);
+                    statusElement.textContent = 'เกิดข้อผิดพลาดในการบันทึก';
+                    statusElement.style.color = 'red';
+                });
+            });
+        });
+    }
+
+
+</script>
 </body>
 </html>
