@@ -19,9 +19,9 @@ if ($conn->connect_error) {
 
 try {
     
-    $sql = "SELECT id, name, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, created_at 
+    $sql = "SELECT id, name, primary_topic, secondary_topic, tertiary_topic, quaternary_topic, created_at, position 
             FROM editor_content 
-            ORDER BY id";
+            ORDER BY position ASC";
     $result = $conn->query($sql);
 
     if ($result === false) {

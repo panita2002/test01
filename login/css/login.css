@@ -16,8 +16,8 @@ body {
 .container {
     display: flex;
     background: white;
-    width: 900px;
-    height: 500px;
+    width: 1000px;
+    height: 550px;
     border-radius: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -109,7 +109,7 @@ body {
 
 .remember-forgot {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     margin-bottom: 20px;
     font-size: 14px;

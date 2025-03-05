@@ -33,7 +33,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
             <div class="d-flex align-items-center">
                 <?php if (isset($_SESSION['id'])): ?>
-                    <span class="text-white me-3">👋 สวัสดี, <?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest'; ?></span>
+                    <span class="text-white me-3">👋 Hello, <?php echo isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest'; ?></span>
                     <a href="../../login/php/logout.php" class="btn btn-danger">Logout</a>
                 <?php else: ?>
                     <a href="../../login/html/login.html" class="btn btn-success">Login</a>
