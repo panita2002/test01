@@ -43,11 +43,11 @@
                     <label for="security-question">คำถามสำหรับกู้คืนรหัสผ่าน</label>
                     <select id="security-question" name="security_question" required>
                         <option value="">เลือกคำถาม</option>
-                        <option value="pet">ชื่อสัตว์เลี้ยงตัวแรกของคุณคือ?</option>
+                        <option value="pet">ชื่อสัตว์เลี้ยงตัวโปรดของคุณคือ?</option>
                         <option value="school">โรงเรียนประถมของคุณชื่ออะไร?</option>
                         <option value="mother">นามสกุลเดิมของคุณแม่คือ?</option>
                         <option value="city">คุณเกิดที่จังหวัดอะไร?</option>
-                        <option value="hobby">งานอดิเรกยอดโปรดตอนเป็นเด็กของคุณคืออะไร?</option>
+                        <option value="hobby">งานอดิเรกของคุณคืออะไร?</option>
                     </select>
                 </div>
                 
@@ -83,7 +83,6 @@
         var securityAnswer = document.getElementById("security-answer").value;
         var errorText = document.getElementById("password-error");
 
-        // ตรวจสอบรหัสผ่าน
         if (password !== confirmPassword) {
             errorText.style.display = "block";
             return false; 
@@ -91,7 +90,6 @@
             errorText.style.display = "none";
         }
 
-        // ตรวจสอบคำถามและคำตอบ
         if (!securityQuestion || !securityAnswer.trim()) {
             alert("กรุณาเลือกคำถามและกรอกคำตอบ");
             return false;

@@ -44,6 +44,15 @@ try {
         ]);
         exit;
     }
+    
+    if (password_verify($data['newPassword'], $user['password'])) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'รหัสผ่านนี้ถูกใช้ไปแล้ว กรุณาตั้งรหัสผ่านใหม่ที่แตกต่างจากเดิม'
+        ]);
+        exit;
+    }
 
     $hashedPassword = password_hash($data['newPassword'], PASSWORD_DEFAULT);
 

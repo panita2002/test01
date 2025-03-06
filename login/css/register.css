@@ -1,92 +1,73 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #ffffff;
+    background-color: #f0f2f5;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
+    margin: 50px;
 }
 
 .container {
     background: #ffffff;
     padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     width: 900px;
     height: 600px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 20px;
 }
 
 .image-container {
     flex: 1;
-    text-align: left;
+    text-align: center;
 }
 
 .image-container img {
     max-width: 100%;
     height: auto;
+    border-radius: 10px;
 }
 
 .form-container {
     flex: 1;
+    padding: 20px;
 }
-
 
 h2 {
     margin-bottom: 20px;
     color: #333;
+    font-size: 24px;
+    text-align: center;
 }
 
 .form-group {
     margin-bottom: 15px;
-    text-align: left;
 }
 
 label {
     display: block;
     font-weight: bold;
     margin-bottom: 5px;
+    color: #333;
 }
 
-input {
+input, select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+    box-sizing: border-box; /* ทำให้ padding ไม่เพิ่มขนาดของ input */
 }
 
-.btn {
-    width: 100%;
-    padding: 10px;
-    background-color: #0056b3;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
 
-.btn:hover {
-    background-color: #003d82;
-}
-
-.login-link {
-    margin-top: 15px;
-    font-size: 14px;
-}
-
-.login-link a {
-    color: #0056b3;
-    text-decoration: none;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
+input:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
 .password-container {
@@ -107,4 +88,38 @@ input {
     border: none;
     cursor: pointer;
     font-size: 18px;
+    color: #555;
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.login-link {
+    margin-top: 15px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.login-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
 }
