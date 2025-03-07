@@ -5,7 +5,7 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 50px;
+    margin: 20px;
 }
 
 .container {
@@ -13,8 +13,7 @@ body {
     padding: 40px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 900px;
-    height: 600px;
+    width: 1000px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -61,13 +60,21 @@ input, select {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
-    box-sizing: border-box; /* ทำให้ padding ไม่เพิ่มขนาดของ input */
+    box-sizing: border-box;
 }
 
 
 input:focus, select:focus {
     border-color: #007bff;
     outline: none;
+}
+
+select {
+    margin-bottom: 5px;
+}
+
+input[name="security_answer"] {
+    margin-top: 5px;
 }
 
 .password-container {

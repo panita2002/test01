@@ -13,11 +13,11 @@ if (!isset($data['username']) || !isset($data['newPassword']) || empty($data['us
     exit;
 }
 
-if (strlen($data['newPassword']) < 6) {
+if (strlen($data['newPassword']) < 8) {
     http_response_code(400);
     echo json_encode([
         'status' => 'error',
-        'message' => 'รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร'
+        'message' => 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร'
     ]);
     exit;
 }

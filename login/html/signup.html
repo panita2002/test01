@@ -29,6 +29,9 @@
                         <input type="password" name="password" id="password" placeholder="รหัสผ่าน" required>
                         <button type="button" class="toggle-password" onclick="togglePassword('password', this)">👁</button>
                     </div>
+                    <p id="password-strength" style="color: red; font-size: 14px; display: none;">
+                        รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร และต้องมีตัวเลขหรืออักขระพิเศษ
+                    </p>
                 </div>
                 <div class="form-group">
                     <label for="confirm-password">ยืนยันรหัสผ่าน</label>
@@ -40,23 +43,16 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="security-question">คำถามสำหรับกู้คืนรหัสผ่าน</label>
-                    <select id="security-question" name="security_question" required>
+                    <label for="security_question">คำถามกู้คืนรหัสผ่าน</label>
+                    <select id="security_question" name="security_question" required>
                         <option value="">เลือกคำถาม</option>
-                        <option value="pet">ชื่อสัตว์เลี้ยงตัวโปรดของคุณคือ?</option>
-                        <option value="school">โรงเรียนประถมของคุณชื่ออะไร?</option>
-                        <option value="mother">นามสกุลเดิมของคุณแม่คือ?</option>
-                        <option value="city">คุณเกิดที่จังหวัดอะไร?</option>
-                        <option value="hobby">งานอดิเรกของคุณคืออะไร?</option>
+                        <option value="ชื่อสัตว์เลี้ยงของคุณ?">ชื่อสัตว์เลี้ยงของคุณ?</option>
+                        <option value="โรงเรียนประถมของคุณชื่ออะไร?">โรงเรียนประถมของคุณชื่ออะไร?</option>
+                        <option value="คุณเกิดที่จังหวัดอะไร?">คุณเกิดที่จังหวัดอะไร?</option>
                     </select>
+                    <input type="text" id="security_answer" name="security_answer" required>
                 </div>
-                
-                <div class="form-group">
-                    <label for="security-answer">คำตอบ</label>
-                    <input type="text" id="security-answer" name="security_answer" required>
-                    <small>จะใช้เพื่อกู้คืนรหัสผ่านหากคุณลืมรหัสผ่าน</small>
-                </div>
-                
+
                 <button type="submit" class="btn">สร้างบัญชี</button>
             </form>
             <center><p class="login-link">มีบัญชีอยู่แล้ว? <a href="../html/login.html">เข้าสู่ระบบที่นี่</a></p></center>
@@ -66,32 +62,38 @@
     <script>
     function togglePassword(id, button) {
         var pass = document.getElementById(id);
-        
-        if (pass.type === "password") {
-            pass.type = "text";
-            button.textContent = "🙈";
-        } else {
-            pass.type = "password";
-            button.textContent = "👁";
-        }
+        pass.type = pass.type === "password" ? "text" : "password";
+        button.textContent = pass.type === "password" ? "👁" : "🙈";
     }
 
     function validateForm() {
         var password = document.getElementById("password").value;
         var confirmPassword = document.getElementById("confirm-password").value;
-        var securityQuestion = document.getElementById("security-question").value;
-        var securityAnswer = document.getElementById("security-answer").value;
+        var securityQuestion = document.getElementById("security_question").value;
         var errorText = document.getElementById("password-error");
+        var strengthText = document.getElementById("password-strength");
 
+        // ตรวจสอบความแข็งแกร่งของรหัสผ่าน
+        if (password.length < 8 || !/\d/.test(password) || !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
+            strengthText.style.display = "block";
+            alert("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร และต้องมีตัวเลขหรืออักขระพิเศษ");
+            return false;
+        } else {
+            strengthText.style.display = "none";
+        }
+
+        // ตรวจสอบว่ารหัสผ่านตรงกัน
         if (password !== confirmPassword) {
             errorText.style.display = "block";
-            return false; 
+            alert("รหัสผ่านไม่ตรงกัน!");
+            return false;
         } else {
             errorText.style.display = "none";
         }
 
-        if (!securityQuestion || !securityAnswer.trim()) {
-            alert("กรุณาเลือกคำถามและกรอกคำตอบ");
+        // ตรวจสอบว่าผู้ใช้เลือกคำถามกู้คืนรหัสผ่านหรือไม่
+        if (securityQuestion === '') {
+            alert("กรุณาเลือกคำถามกู้คืนรหัสผ่าน");
             return false;
         }
 
