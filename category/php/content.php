@@ -14,7 +14,7 @@
     <div class="container-custom">
         <div class="text-section">
             <h1>Wealth Management System Limited</h1>
-            <p>เอกสารคู่มือประกอบการติดตั้งโปรแกรม</p> <br>
+            <p>คู่มือการติดตั้งของ Product Investment </p> <br>
             
             <div class="grid-section">
                 <div class="grid-item" onclick="window.location.href='../../content-editor/php/content-list.php'">
