@@ -1,32 +1,26 @@
 <?php
 session_start();
 
-// ตรวจสอบว่าผู้ใช้ล็อกอินหรือยัง
 if (!isset($_SESSION["username"])) {
-    header("Location: ../../login/html/login.html"); // ถ้ายังไม่ได้ล็อกอินให้ไปที่หน้า Login
+    header("Location: ../../login/html/login.html"); 
     exit();
 }
 
-// เชื่อมต่อ LDAP เพื่อดึงข้อมูลผู้ใช้
 $ldap_server = "ldap://128.1.0.1:389";
 $ldap_dn = "CN=moodleBind,OU=WMSL,OU=System,OU=WMSL_User,DC=wmsl,DC=local";
 $ldap_password = "";
 
-// เชื่อมต่อกับเซิร์ฟเวอร์ LDAP
 $ldap_conn = ldap_connect($ldap_server);
 if (!$ldap_conn) {
     die("❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ LDAP");
 }
 
-// ตั้งค่าให้ใช้ LDAP Protocol Version 3
 ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
 
-// Bind ด้วยบัญชีแอดมิน
 if (!ldap_bind($ldap_conn, $ldap_dn, $ldap_password)) {
     die("❌ ไม่สามารถเชื่อมต่อ LDAP (Bind failed)");
 }
 
-// ค้นหาข้อมูลของผู้ใช้จาก LDAP
 $username = $_SESSION["username"];
 $search_dn = "ou=users,dc=example,dc=com"; // ตำแหน่งของบัญชีผู้ใช้ใน LDAP
 $filter = "(cn=$username)"; // ค้นหาผู้ใช้ตาม cn

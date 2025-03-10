@@ -73,7 +73,6 @@
         var errorText = document.getElementById("password-error");
         var strengthText = document.getElementById("password-strength");
 
-        // ตรวจสอบความแข็งแกร่งของรหัสผ่าน
         if (password.length < 8 || !/\d/.test(password) || !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
             strengthText.style.display = "block";
             alert("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร และต้องมีตัวเลขหรืออักขระพิเศษ");
@@ -82,7 +81,6 @@
             strengthText.style.display = "none";
         }
 
-        // ตรวจสอบว่ารหัสผ่านตรงกัน
         if (password !== confirmPassword) {
             errorText.style.display = "block";
             alert("รหัสผ่านไม่ตรงกัน!");
@@ -91,7 +89,6 @@
             errorText.style.display = "none";
         }
 
-        // ตรวจสอบว่าผู้ใช้เลือกคำถามกู้คืนรหัสผ่านหรือไม่
         if (securityQuestion === '') {
             alert("กรุณาเลือกคำถามกู้คืนรหัสผ่าน");
             return false;
