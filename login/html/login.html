@@ -62,6 +62,11 @@
                 document.getElementById('error-message').textContent = errorMessage;
             }
         };
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorMessage = urlParams.get("error");
+        if (errorMessage) {
+            alert(errorMessage);
+        }
     </script>
 </body>
 </html>
