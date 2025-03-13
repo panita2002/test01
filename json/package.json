@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "@angular/core": "^19.0.6",
-    "@angular/platform-browser": "^19.0.6",
-    "@angular/platform-browser-dynamic": "^19.0.6",
-    "devextreme-angular": "^24.2.3",
-    "express": "^4.21.2"
-  }
-}

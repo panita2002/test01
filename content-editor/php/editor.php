@@ -17,7 +17,6 @@ if (!isset($_SESSION['id'])) {
     <title>Editor</title>
     <link rel="stylesheet" href="../css/editor.css">
     <script src="https://editor.unlayer.com/embed.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <?php include('../../category/php/header.php'); ?>
